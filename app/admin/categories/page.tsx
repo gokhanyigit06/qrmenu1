@@ -120,7 +120,7 @@ function SortableItem({
 }
 
 export default function CategoriesPage() {
-    const { categories, updateCategories } = useMenu();
+    const { categories, updateCategories, addCategory, updateCategory, deleteCategory } = useMenu();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState<Category | undefined>(undefined);
 
@@ -154,26 +154,29 @@ export default function CategoriesPage() {
         setIsModalOpen(true);
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (confirm('Kategoriyi silmek istediğinize emin misiniz?')) {
-            updateCategories(categories.filter(c => c.id !== id));
+            await deleteCategory(id);
         }
     };
 
-    const handleSave = (savedCategory: Category) => {
-        if (editingCategory) {
-            // Update
-            updateCategories(categories.map(c => c.id === savedCategory.id ? savedCategory : c));
-        } else {
-            // Add new
-            const newCat = {
-                ...savedCategory,
-                id: Math.random().toString(36).substr(2, 9),
-                slug: savedCategory.name.toLowerCase().replace(/ /g, '-')
-            };
-            updateCategories([...categories, newCat]);
+    const handleSave = async (savedCategory: Category) => {
+        try {
+            if (editingCategory) {
+                // Update
+                await updateCategory(editingCategory.id, savedCategory);
+            } else {
+                // Add new
+                const newCat = {
+                    ...savedCategory,
+                    slug: savedCategory.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+                };
+                await addCategory(newCat);
+            }
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error("Save failed", error);
         }
-        setIsModalOpen(false);
     };
 
     return (

@@ -15,6 +15,7 @@ interface MenuContextType {
     reorderProducts: (products: Product[]) => Promise<void>;
     updateSettings: (settings: Partial<SiteSettings>) => Promise<void>;
     updateCategories: (categories: Category[]) => Promise<void>;
+    updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
     addCategory: (category: Partial<Category>) => Promise<void>;
     deleteCategory: (id: string) => Promise<void>;
     uploadImage: (file: File) => Promise<string>;
@@ -128,6 +129,16 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const updateCategory = async (id: string, category: Partial<Category>) => {
+        setCategories(prev => prev.map(c => c.id === id ? { ...c, ...category } : c));
+        try {
+            await Services.updateCategory(id, category);
+        } catch (error) {
+            console.error("Error updating category:", error);
+            await refreshData();
+        }
+    };
+
     const deleteCategory = async (id: string) => {
         setCategories(prev => prev.filter(c => c.id !== id));
         try {
@@ -166,6 +177,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             reorderProducts,
             updateSettings,
             updateCategories,
+            updateCategory,
             addCategory,
             deleteCategory,
             uploadImage,
