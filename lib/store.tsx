@@ -121,8 +121,9 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
         try {
             await Services.createCategory(category);
             await refreshData();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error adding category:", error);
+            alert("Kategori eklenirken hata: " + (error?.message || JSON.stringify(error)));
             throw error;
         }
     };
