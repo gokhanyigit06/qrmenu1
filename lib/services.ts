@@ -5,9 +5,69 @@ import { Category, Product, SiteSettings, Restaurant } from './data';
 // --- RESTAURANT ---
 
 export async function getRestaurantBySlug(slug: string): Promise<Restaurant | null> {
-    const { data, error } = await supabase.from('restaurants').select('*').eq('slug', slug).single();
+    const { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
     if (error) return null;
+    return data as Restaurant;
+}
+
+// --- SUPER ADMIN SERVICES ---
+
+export async function getAllRestaurants() {
+    const { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
     return data;
+}
+
+export async function createRestaurant(name: string, slug: string, password: string) {
+    // 1. Create Restaurant
+    const { data: rest, error: restError } = await supabase
+        .from('restaurants')
+        .insert([{ name, slug, password }])
+        .select()
+        .single();
+
+    if (restError) throw restError;
+
+    // 2. Create Default Settings
+    // Note: We let DB handle 'id' generation.
+    const { error: setError } = await supabase
+        .from('settings')
+        .insert([{
+            restaurant_id: rest.id,
+            theme_color: 'black',
+            dark_mode: false,
+            banner_active: true,
+            banner_urls: ['https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'],
+            popup_active: false,
+            logo_width: 150,
+            default_product_image: ''
+        }]);
+
+    if (setError) {
+        console.error("Error creating settings for new restaurant", setError);
+    }
+
+    return rest;
+}
+
+export async function deleteRestaurant(id: string) {
+    // Delete related data first (products, categories, settings)
+    // Assuming Cascade is NOT set up, we do it manually to be safe
+    await supabase.from('products').delete().eq('restaurant_id', id);
+    await supabase.from('categories').delete().eq('restaurant_id', id);
+    await supabase.from('settings').delete().eq('restaurant_id', id);
+
+    const { error } = await supabase.from('restaurants').delete().eq('id', id);
+    if (error) throw error;
 }
 
 // --- CATEGORIES ---
