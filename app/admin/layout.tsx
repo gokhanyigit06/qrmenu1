@@ -6,7 +6,8 @@ import {
     LogOut,
     Menu,
     Settings,
-    Store
+    Store,
+    ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -46,12 +47,24 @@ export default function AdminLayout({
             {/* Sidebar */}
             <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 pb-10 pt-5 transition-transform flex flex-col">
                 <div className="px-6 mb-8">
-                    <Link href={`/${restaurant.slug}`} target="_blank" className="flex items-center gap-2 group">
-                        <div className="h-8 w-8 rounded-lg bg-amber-500 flex items-center justify-center group-hover:bg-amber-600 transition-colors">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="h-10 w-10 shrink-0 rounded-xl bg-black flex items-center justify-center shadow-lg shadow-gray-200">
                             <Store className="h-5 w-5 text-white" />
                         </div>
-                        <span className="text-xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors">QR Admin</span>
-                    </Link>
+                        <div className="overflow-hidden">
+                            <h2 className="truncate text-sm font-bold text-gray-900">{restaurant.name}</h2>
+                            <p className="truncate text-xs text-gray-500">Yönetim Paneli</p>
+                        </div>
+                    </div>
+
+                    <a
+                        href={`/${restaurant.slug}`}
+                        target="_blank"
+                        className="group flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-bold text-gray-700 shadow-sm transition-all hover:border-amber-400 hover:text-amber-600 hover:shadow-md active:scale-95"
+                    >
+                        <span>Menüyü Önizle</span>
+                        <ExternalLink className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
                 </div>
 
                 <nav className="flex-1 px-4 space-y-1">

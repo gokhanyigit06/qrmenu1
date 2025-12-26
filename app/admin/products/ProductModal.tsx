@@ -2,7 +2,7 @@ import { useMenu } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 import { Product, ProductTag } from '@/lib/data';
-import { Flame, Leaf, Wheat, Loader2 } from 'lucide-react';
+import { Flame, Leaf, Wheat, Loader2, Trash2, Plus } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 // ... (comments)
@@ -34,6 +34,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
         image: '',
         categoryId: '',
         tags: [],
+        variants: [],
     });
 
     useEffect(() => {
@@ -50,6 +51,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                 image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
                 categoryId: categories[0]?.id || '',
                 tags: [],
+                variants: [],
             });
         }
     }, [product, isOpen, categories]);
@@ -62,6 +64,24 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
 
     // ... (render)
 
+
+    const addVariant = () => {
+        const currentVariants = formData.variants || [];
+        setFormData({ ...formData, variants: [...currentVariants, { name: '', price: 0 }] });
+    };
+
+    const removeVariant = (index: number) => {
+        const currentVariants = formData.variants || [];
+        setFormData({ ...formData, variants: currentVariants.filter((_, i) => i !== index) });
+    };
+
+    const updateVariant = (index: number, field: 'name' | 'price', value: string | number) => {
+        const currentVariants = [...(formData.variants || [])];
+        if (field === 'price') value = parseFloat(value as string) || 0;
+
+        currentVariants[index] = { ...currentVariants[index], [field]: value };
+        setFormData({ ...formData, variants: currentVariants });
+    };
 
     const toggleTag = (tag: ProductTag) => {
         const currentTags = formData.tags || [];
@@ -352,6 +372,49 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                             </button>
                                         );
                                     })}
+                                </div>
+                            </div>
+
+                            {/* Variants Section */}
+                            <div className="pt-2">
+                                <label className="mb-2 block text-sm font-medium text-gray-700">Varyantlar / Porsiyonlar</label>
+                                <div className="space-y-2">
+                                    {(formData.variants || []).map((variant, index) => (
+                                        <div key={index} className="flex gap-2 items-center animate-in fade-in slide-in-from-top-1">
+                                            <input
+                                                type="text"
+                                                placeholder="İsim (Küçük vb.)"
+                                                value={variant.name}
+                                                onChange={(e) => updateVariant(index, 'name', e.target.value)}
+                                                className="flex-1 rounded-lg border border-gray-300 px-2 py-1.5 text-xs outline-none focus:border-black"
+                                                required
+                                            />
+                                            <input
+                                                type="number"
+                                                placeholder="Fiyat"
+                                                value={variant.price}
+                                                onChange={(e) => updateVariant(index, 'price', e.target.value)}
+                                                className="w-20 rounded-lg border border-gray-300 px-2 py-1.5 text-xs outline-none focus:border-black text-right"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeVariant(index)}
+                                                className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                                                title="Sil"
+                                            >
+                                                <Trash2 className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        onClick={addVariant}
+                                        className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-300 p-2 text-xs font-semibold text-gray-500 hover:bg-gray-50 hover:text-black hover:border-gray-400 transition-all"
+                                    >
+                                        <Plus className="h-3 w-3" />
+                                        Varyant Ekle
+                                    </button>
                                 </div>
                             </div>
                         </div>

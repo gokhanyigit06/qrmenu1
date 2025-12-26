@@ -43,6 +43,7 @@ export interface Product {
   tags?: ProductTag[];
   isActive?: boolean;
   sortOrder?: number;
+  variants?: { name: string; price: number }[];
 }
 
 export interface SiteSettings {

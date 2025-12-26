@@ -87,6 +87,20 @@ export default function ProductCard({ product, language }: ProductCardProps) {
                     {displayDescription}
                 </p>
 
+                {/* Variants List */}
+                {product.variants && product.variants.length > 0 && (
+                    <div className="mb-4 mt-2 space-y-2 border-t border-dashed border-gray-200 pt-3">
+                        {product.variants.map((variant, idx) => (
+                            <div key={idx} className="flex items-center justify-between text-sm">
+                                <span className="font-medium text-gray-700">{variant.name}</span>
+                                <span className={cn("font-bold text-base", activeColorClass)}>
+                                    {variant.price} ₺
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {/* Tags / Allergens Footer */}
                 {product.tags && product.tags.length > 0 && (
                     <div className="mt-auto flex flex-wrap gap-2 pt-2">
