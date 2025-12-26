@@ -177,14 +177,82 @@ export async function updateSettings(settings: Partial<SiteSettings>) {
 
 // --- STORAGE ---
 
-export async function uploadImage(file: File, bucketName: string = 'qrmenu1-images') {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+export async function uploadImage(file: File, bucketName: string = 'qrmenu1-images'): Promise<string> {
+    // 1. Client-side Compression
+    const compressedFile = await new Promise<File>((resolve, reject) => {
+        // If not an image, return original
+        if (!file.type.startsWith('image/')) {
+            resolve(file);
+            return;
+        }
+
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+        img.src = objectUrl;
+
+        img.onload = () => {
+            URL.revokeObjectURL(objectUrl); // Clean up memory
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1200;
+            const MAX_HEIGHT = 1200;
+            let width = img.width;
+            let height = img.height;
+
+            // Calculate new dimensions
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            if (!ctx) {
+                resolve(file);
+                return;
+            }
+
+            // Draw and resize
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Compress to JPEG with 0.8 quality
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    // Create new file with .jpg extension
+                    const newName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                    const newFile = new File([blob], newName, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now(),
+                    });
+                    resolve(newFile);
+                } else {
+                    resolve(file);
+                }
+            }, 'image/jpeg', 0.8);
+        };
+
+        img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            resolve(file); // Fallback to original
+        };
+    });
+
+    // 2. Upload
+    const fileExt = compressedFile.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
     const filePath = `${fileName}`;
 
     const { error: uploadError } = await supabase.storage
         .from(bucketName)
-        .upload(filePath, file);
+        .upload(filePath, compressedFile);
 
     if (uploadError) {
         throw uploadError;
