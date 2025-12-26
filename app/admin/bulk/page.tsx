@@ -2,13 +2,14 @@
 'use client';
 
 import { Product } from '@/lib/data';
+import * as Services from '@/lib/services';
 import { useMenu } from '@/lib/store';
 import { AlertCircle, CheckCircle, Download, FileSpreadsheet, Percent, Upload } from 'lucide-react';
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 
 export default function BulkOperationsPage() {
-    const { products, categories, reorderProducts } = useMenu();
+    const { products, categories, reorderProducts, refreshData } = useMenu();
     const [priceUpdateRate, setPriceUpdateRate] = useState<string>('');
     const [importStatus, setImportStatus] = useState<{
         type: 'success' | 'error' | 'info';
@@ -93,51 +94,133 @@ export default function BulkOperationsPage() {
         reader.readAsBinaryString(file);
     };
 
-    const processImportedData = (data: any[]) => {
+    const processImportedData = async (data: any[]) => {
+        setImportStatus({ type: 'info', message: 'Veriler işleniyor, lütfen bekleyin... (Kategoriler kontrol ediliyor)' });
         let updatedCount = 0;
         let addedCount = 0;
-        const newProducts = [...products];
 
-        data.forEach((row: any) => {
-            if (!row.Name || !row.Price) return;
+        try {
+            // 1. Manage Categories
+            // Build a map of existing categories: Name -> ID
+            const categoryMap = new Map<string, string>();
+            categories.forEach(c => {
+                categoryMap.set(c.name.trim().toLowerCase(), c.id);
+                if (c.nameEn) categoryMap.set(c.nameEn.trim().toLowerCase(), c.id);
+            });
 
-            const existingProductIndex = newProducts.findIndex(
-                p => (row.ID && p.id === row.ID) || p.name.toLowerCase() === row.Name.toString().toLowerCase()
-            );
+            // Find all unique category names in the Excel file
+            const newCategoryNames = new Set<string>();
+            data.forEach((row: any) => {
+                const catName = row.Category || row.Kategori || row['Category Name'] || row.CategoryName;
+                if (catName && typeof catName === 'string') {
+                    const normalized = catName.trim().toLowerCase();
+                    if (!categoryMap.has(normalized)) {
+                        newCategoryNames.add(catName.trim());
+                    }
+                }
+            });
 
-            const productData: Product = {
-                id: existingProductIndex !== -1 ? newProducts[existingProductIndex].id : Math.random().toString(36).substr(2, 9),
-                name: row.Name,
-                nameEn: row.Name_EN,
-                description: row.Description || '',
-                descriptionEn: row.Description_EN,
-                price: parseFloat(row.Price),
-                discountPrice: row.DiscountPrice ? parseFloat(row.DiscountPrice) : undefined,
-                image: row.Image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
-                categoryId: row.CategoryId?.toString() || '1',
-                badge: row.Badge || undefined,
-                isActive: row.Active === 'Hayır' ? false : true
-            };
-
-            if (existingProductIndex !== -1) {
-                newProducts[existingProductIndex] = productData;
-                updatedCount++;
-            } else {
-                newProducts.push(productData);
-                addedCount++;
+            // Create missing categories
+            if (newCategoryNames.size > 0) {
+                setImportStatus({ type: 'info', message: `${newCategoryNames.size} yeni kategori oluşturuluyor...` });
+                for (const catName of Array.from(newCategoryNames)) {
+                    try {
+                        const newCat = await Services.createCategory({
+                            name: catName,
+                            slug: catName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+                        });
+                        if (newCat && newCat.id) {
+                            categoryMap.set(catName.trim().toLowerCase(), newCat.id);
+                        }
+                    } catch (err) {
+                        console.error(`Failed to create category ${catName}`, err);
+                    }
+                }
             }
-        });
 
-        // Use reorderProducts to update the entire list
-        reorderProducts(newProducts);
+            // 2. Process Products
+            setImportStatus({ type: 'info', message: `Ürünler işleniyor (${data.length} adet)...` });
 
-        setImportStatus({
-            type: 'success',
-            message: `İşlem tamamlandı: ${addedCount} yeni ürün eklendi, ${updatedCount} ürün güncellendi.`
-        });
+            for (const row of data) {
+                // Name is required
+                const name = row.Name || row.UrunAdi || row['Ürün Adı'];
+                if (!name) continue;
 
-        const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
+                // Price Parsing (handle "165 ₺", "165 TL", etc)
+                const parsePrice = (val: any) => {
+                    if (!val) return 0;
+                    if (typeof val === 'number') return val;
+                    // Keep digits, comma, dot. Replace comma with dot if needed.
+                    // Simple approach: remove all non-digit/dot/comma. 
+                    // Then replace comma with dot.
+                    // But "1.200,50" -> "1200.50" vs "1,200.50".
+                    // Let's assume standard Turkish format: X.XXX,YY or English X,XXX.YY
+                    // Safest: remove non-numeric chars except last separator?
+                    // Let's stick to simple: remove non-digit-dot-comma.
+                    let clean = val.toString().replace(/[^0-9.,]/g, '');
+                    if (clean.includes(',')) clean = clean.replace(',', '.');
+                    return parseFloat(clean) || 0;
+                };
+                const price = parsePrice(row.Price || row.Fiyat);
+
+                // Category ID Resolution
+                const catNameInRow = row.Category || row.Kategori || row['Category Name'] || row.CategoryName;
+                let catId = row.CategoryId || row['Category ID'];
+
+                if (!catId && catNameInRow && typeof catNameInRow === 'string') {
+                    catId = categoryMap.get(catNameInRow.trim().toLowerCase());
+                }
+
+                // Prepare Product Data
+                const productData: Partial<Product> = {
+                    name: name,
+                    nameEn: row.Name_EN || row.NameEn,
+                    description: row.Description || row.Aciklama,
+                    descriptionEn: row.Description_EN || row.DescriptionEn,
+                    price: price,
+                    discountPrice: row.DiscountPrice ? parsePrice(row.DiscountPrice) : undefined,
+                    image: row.Image || row.Gorsel || row.Resim,
+                    categoryId: catId,
+                    badge: row.Badge || row.Rozet,
+                    isActive: (row.Active === 'Hayır' || row.Aktif === 'Hayır' || row.Active === false) ? false : true
+                };
+
+                // Remove undefined keys
+                Object.keys(productData).forEach(key => (productData as any)[key] === undefined && delete (productData as any)[key]);
+
+                // Check existence
+                const existingProduct = products.find(p =>
+                    (row.ID && p.id === row.ID) ||
+                    (p.name.trim().toLowerCase() === name.toString().trim().toLowerCase())
+                );
+
+                if (existingProduct) {
+                    await Services.updateProduct(existingProduct.id, productData);
+                    updatedCount++;
+                } else {
+                    await Services.createProduct(productData);
+                    addedCount++;
+                }
+            }
+
+            // 3. Refresh & Finish
+            await refreshData();
+
+            setImportStatus({
+                type: 'success',
+                message: `İşlem tamamlandı: ${addedCount} yeni ürün eklendi, ${updatedCount} ürün güncellendi.`
+            });
+
+            const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+            if (fileInput) fileInput.value = '';
+
+        } catch (error: any) {
+            console.error("Import error:", error);
+            setImportStatus({
+                type: 'error',
+                message: 'İçe aktarma sırasında hata: ' + (error.message || 'Bilinmeyen hata')
+            });
+        }
     };
 
     // BULK PRICE UPDATE
