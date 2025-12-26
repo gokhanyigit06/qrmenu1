@@ -106,3 +106,7 @@ CREATE POLICY "Enable select for everyone"
 ON analytics FOR SELECT 
 TO anon, authenticated 
 USING (true);
+
+-- --- CUSTOM DOMAIN SUPPORT ---
+ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS custom_domain TEXT UNIQUE;
+CREATE INDEX IF NOT EXISTS idx_restaurants_custom_domain ON restaurants(custom_domain);

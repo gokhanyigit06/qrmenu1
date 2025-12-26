@@ -58,17 +58,23 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     };
 
     // Initial Load - Multi-tenant Support
+    // Initial Load - Multi-tenant Support
     useEffect(() => {
         const init = async () => {
             let slug: string | null = null;
+            let domain: string | null = null;
             let restaurantIdFromSession: string | null = null;
 
             // 1. Check URL Slug (Client View)
             if (params?.slug && typeof params.slug === 'string') {
                 slug = params.slug;
             }
-            // 2. Check LocalStorage (Admin View)
-            // We only check session if we are NOT on a slug page (which implies Admin or Home)
+            // 2. Check Custom Domain (Client View)
+            else if (params?.domain && typeof params.domain === 'string') {
+                domain = params.domain;
+            }
+            // 3. Check LocalStorage (Admin View)
+            // We only check session if we are NOT on a slug or domain page
             else {
                 try {
                     const session = localStorage.getItem('qr_admin_session');
@@ -92,6 +98,15 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                     console.error("Restaurant not found:", slug);
                     setLoading(false);
                 }
+            } else if (domain) {
+                const restaurant = await Services.getRestaurantByDomain(domain);
+                if (restaurant) {
+                    setRestaurantId(restaurant.id);
+                    refreshData(restaurant.id);
+                } else {
+                    console.error("Restaurant domain not found:", domain);
+                    setLoading(false);
+                }
             } else if (restaurantIdFromSession) {
                 setRestaurantId(restaurantIdFromSession);
                 refreshData(restaurantIdFromSession);
@@ -101,7 +116,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             }
         };
         init();
-    }, [params?.slug]);
+    }, [params?.slug, params?.domain]);
 
     const addProduct = async (product: Partial<Product>) => {
         if (!restaurantId) return;

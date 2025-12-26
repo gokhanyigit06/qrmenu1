@@ -3,7 +3,7 @@
 
 import { useMenu } from '@/lib/store';
 import * as Services from '@/lib/services';
-import { Eye, EyeOff, Save, Upload } from 'lucide-react';
+import { Eye, EyeOff, Save, Upload, Globe } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
@@ -19,6 +19,46 @@ export default function SettingsPage() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loadingPass, setLoadingPass] = useState(false);
+
+    // --- DOMAIN LOGIC ---
+    const [domain, setDomain] = useState('');
+    const [loadingDomain, setLoadingDomain] = useState(false);
+
+    useEffect(() => {
+        const loadDomain = async () => {
+            const session = localStorage.getItem('qr_admin_session');
+            if (!session) return;
+            try {
+                const data = JSON.parse(session);
+                if (data.slug) {
+                    const r = await Services.getRestaurantBySlug(data.slug);
+                    if (r && r.custom_domain) setDomain(r.custom_domain);
+                }
+            } catch (e) { console.error(e); }
+        };
+        loadDomain();
+    }, []);
+
+    const handleDomainSave = async () => {
+        const session = localStorage.getItem('qr_admin_session');
+        if (!session) return;
+
+        const confirm = window.confirm('Bu domain için DNS ayarlarını (CNAME) yaptığınızdan emin misiniz? Yanlış ayar menünüzün çalışmamasına neden olabilir.');
+        if (!confirm) return;
+
+        try {
+            setLoadingDomain(true);
+            const data = JSON.parse(session);
+            const rId = data.restaurantId || data.id;
+            await Services.updateRestaurantDomain(rId, domain);
+            alert('Domain başarıyla kaydedildi! CNAME yönlendirmesinin aktif olması biraz zaman alabilir.');
+        } catch (e) {
+            console.error(e);
+            alert('Hata: Bu domain başka bir restoran tarafından kullanılıyor olabilir veya geçersiz.');
+        } finally {
+            setLoadingDomain(false);
+        }
+    };
 
     const handleChangePassword = async () => {
         if (!newPassword || newPassword !== confirmPassword) {
@@ -389,6 +429,43 @@ export default function SettingsPage() {
                                     placeholder="https://..."
                                 />
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Domain Settings */}
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-6 shadow-sm lg:col-span-2">
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-1">
+                            <Globe className="h-5 w-5 text-blue-600" />
+                            <h3 className="text-lg font-bold text-gray-900">Özel Domain (Alan Adı)</h3>
+                        </div>
+                        <p className="text-sm text-gray-500">Restoran menünüzü kendi web sitenize bağlayın. Örn: <code>menu.restoranadi.com</code></p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="mb-1 block text-sm font-medium text-gray-700">Domain Adresi</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={domain}
+                                    onChange={(e) => setDomain(e.target.value)}
+                                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                    placeholder="menu.siteniz.com"
+                                />
+                                <button
+                                    onClick={handleDomainSave}
+                                    disabled={loadingDomain}
+                                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {loadingDomain ? 'Kaydediliyor...' : 'Kaydet'}
+                                </button>
+                            </div>
+                            <p className="mt-2 text-xs text-gray-500">
+                                <strong>Kurulum:</strong> Domain sağlayıcınızda (GoDaddy, Namecheap vb.) bir <code>CNAME</code> kaydı oluşturun. <br />
+                                <span className="inline-block mt-1 bg-white p-1 rounded border">Host: <code>{domain.split('.')[0] || 'menu'}</code></span> <span className="text-gray-400">&rarr;</span> <span className="inline-block mt-1 bg-white p-1 rounded border">Hedef: <code>qrmenu1-mu.vercel.app</code></span>
+                            </p>
                         </div>
                     </div>
                 </div>

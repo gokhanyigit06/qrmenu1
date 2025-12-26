@@ -15,12 +15,36 @@ export async function getRestaurantBySlug(slug: string): Promise<Restaurant | nu
     return data as Restaurant;
 }
 
+export async function getRestaurantByDomain(domain: string): Promise<Restaurant | null> {
+    const { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .eq('custom_domain', domain)
+        .single();
+
+    if (error) return null;
+    return data as Restaurant;
+}
+
 export async function updateRestaurantPassword(restaurantId: string, newPassword: string) {
     const { error } = await supabase
         .from('restaurants')
         .update({ password: newPassword })
         .eq('id', restaurantId);
 
+    if (error) throw error;
+}
+
+export async function updateRestaurantDomain(restaurantId: string, domain: string) {
+    let cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase();
+
+    if (!cleanDomain) {
+        const { error } = await supabase.from('restaurants').update({ custom_domain: null }).eq('id', restaurantId);
+        if (error) throw error;
+        return;
+    }
+
+    const { error } = await supabase.from('restaurants').update({ custom_domain: cleanDomain }).eq('id', restaurantId);
     if (error) throw error;
 }
 

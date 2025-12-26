@@ -4,6 +4,7 @@ export interface Restaurant {
   name: string;
   slug: string;
   created_at?: string;
+  custom_domain?: string | null;
 }
 
 export interface Category {
