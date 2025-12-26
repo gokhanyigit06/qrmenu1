@@ -77,3 +77,32 @@ create policy "Users can delete products" on products for delete using (true);
 -- Settings
 create policy "Public settings are viewable by everyone" on settings for select using (true);
 create policy "Users can update settings" on settings for update using (true);
+
+-- --- ANALYTICS & TRACKING ---
+
+-- 1. Create the table
+CREATE TABLE IF NOT EXISTS analytics (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  restaurant_id UUID REFERENCES restaurants(id) ON DELETE CASCADE,
+  event_type TEXT DEFAULT 'view',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  meta JSONB
+);
+
+-- 2. Create Index for faster querying
+CREATE INDEX IF NOT EXISTS idx_analytics_restaurant_date ON analytics(restaurant_id, created_at);
+
+-- 3. IMPORTANT: Enable RLS (Security)
+ALTER TABLE analytics ENABLE ROW LEVEL SECURITY;
+
+-- 4. Allow ANONYMOUS users (visitors) to INSERT (track views)
+CREATE POLICY "Enable insert for everyone" 
+ON analytics FOR INSERT 
+TO anon, authenticated 
+WITH CHECK (true);
+
+-- 5. Allow reading stats
+CREATE POLICY "Enable select for everyone" 
+ON analytics FOR SELECT 
+TO anon, authenticated 
+USING (true);
