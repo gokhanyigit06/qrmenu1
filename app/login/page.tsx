@@ -101,6 +101,17 @@ export default function LoginPage() {
                         </div>
                     </div>
 
+                    <div className="flex items-center justify-end text-sm">
+                        <a
+                            href="https://wa.me/905434081806?text=Merhaba,%20QR%20Menü%20şifremi%20unuttum.%20Yardımcı%20olabilir%20misiniz?"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-gray-600 hover:text-black transition-colors"
+                        >
+                            Şifremi unuttum?
+                        </a>
+                    </div>
+
                     {error && (
                         <div className="rounded-lg bg-red-50 p-4 text-sm text-red-500 text-center font-medium border border-red-100">
                             {error}

@@ -15,6 +15,15 @@ export async function getRestaurantBySlug(slug: string): Promise<Restaurant | nu
     return data as Restaurant;
 }
 
+export async function updateRestaurantPassword(restaurantId: string, newPassword: string) {
+    const { error } = await supabase
+        .from('restaurants')
+        .update({ password: newPassword })
+        .eq('id', restaurantId);
+
+    if (error) throw error;
+}
+
 // --- SUPER ADMIN SERVICES ---
 
 export async function getAllRestaurants() {

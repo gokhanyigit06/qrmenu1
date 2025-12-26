@@ -2,6 +2,7 @@
 'use client';
 
 import { useMenu } from '@/lib/store';
+import * as Services from '@/lib/services';
 import { Eye, EyeOff, Save, Upload } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -13,6 +14,45 @@ export default function SettingsPage() {
     // Or just bind directly. For 'Save' button feeling, let's use local state.
     const [localSettings, setLocalSettings] = useState(settings);
     const [isUploading, setIsUploading] = useState(false);
+
+    // Password Update State
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [loadingPass, setLoadingPass] = useState(false);
+
+    const handleChangePassword = async () => {
+        if (!newPassword || newPassword !== confirmPassword) {
+            alert('Şifreler uyuşmuyor veya boş!');
+            return;
+        }
+
+        // Get Restaurant ID safely
+        let targetId = (settings as any).restaurantId;
+        if (!targetId) {
+            const session = localStorage.getItem('qr_admin_session');
+            if (session) {
+                try { targetId = JSON.parse(session).restaurantId; } catch { }
+            }
+        }
+
+        if (!targetId) {
+            alert('Hata: Oturum bilgisi bulunamadı.');
+            return;
+        }
+
+        setLoadingPass(true);
+        try {
+            await Services.updateRestaurantPassword(targetId, newPassword);
+            alert('Şifreniz güncellendi.');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (e) {
+            console.error(e);
+            alert('Şifre güncellenemedi.');
+        } finally {
+            setLoadingPass(false);
+        }
+    };
 
     // Sync local state if context changes (e.g. initial load)
     useEffect(() => {
@@ -352,16 +392,56 @@ export default function SettingsPage() {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="flex justify-end pt-4 border-t border-gray-200">
-                <button
-                    onClick={handleSave}
-                    className="flex items-center gap-2 rounded-lg bg-black px-6 py-3 text-sm font-bold text-white hover:bg-gray-800 transition-transform active:scale-95"
-                >
-                    <Save className="h-4 w-4" />
-                    Değişiklikleri Kaydet
-                </button>
+                {/* Security Settings */}
+                <div className="rounded-2xl border border-red-100 bg-red-50/50 p-6 shadow-sm lg:col-span-2">
+                    <div className="mb-6">
+                        <h3 className="text-lg font-bold text-gray-900">Hesap Güvenliği</h3>
+                        <p className="text-sm text-gray-500">Yönetici şifrenizi buradan değiştirebilirsiniz.</p>
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div>
+                            <label className="mb-1 block text-sm font-bold text-gray-700">Yeni Şifre</label>
+                            <input
+                                type="password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                placeholder="******"
+                            />
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-sm font-bold text-gray-700">Yeni Şifre (Tekrar)</label>
+                            <input
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                placeholder="******"
+                            />
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button
+                            onClick={handleChangePassword}
+                            disabled={!newPassword || newPassword !== confirmPassword || loadingPass}
+                            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                        >
+                            {loadingPass ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-gray-200 lg:col-span-2">
+                    <button
+                        onClick={handleSave}
+                        className="flex items-center gap-2 rounded-lg bg-black px-6 py-3 text-sm font-bold text-white hover:bg-gray-800 transition-transform active:scale-95"
+                    >
+                        <Save className="h-4 w-4" />
+                        Değişiklikleri Kaydet
+                    </button>
+                </div>
             </div>
         </div>
     );
