@@ -7,7 +7,8 @@ import {
     Menu,
     Settings,
     Store,
-    ExternalLink
+    ExternalLink,
+    List
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -69,10 +70,17 @@ export default function AdminLayout({
 
                 <nav className="flex-1 px-4 space-y-1">
                     <Link
-                        href="/admin/categories"
+                        href="/admin"
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-amber-600 transition-colors"
                     >
                         <LayoutDashboard className="h-5 w-5" />
+                        Genel Bakış
+                    </Link>
+                    <Link
+                        href="/admin/categories"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-amber-600 transition-colors"
+                    >
+                        <List className="h-5 w-5" />
                         Kategoriler
                     </Link>
                     <Link
