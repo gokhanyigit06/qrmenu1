@@ -25,18 +25,22 @@ interface MenuContextType {
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
 export function MenuProvider({ children }: { children: React.ReactNode }) {
+    const [restaurantId, setRestaurantId] = useState<string | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
     const [loading, setLoading] = useState(true);
 
-    const refreshData = async () => {
+    const refreshData = async (overrideId?: string) => {
+        const targetId = overrideId || restaurantId;
+        if (!targetId) return;
+
         setLoading(true);
         try {
             const [fetchedCategories, fetchedProducts, fetchedSettings] = await Promise.all([
-                Services.getCategories(),
-                Services.getProducts(),
-                Services.getSettings()
+                Services.getCategories(targetId),
+                Services.getProducts(targetId),
+                Services.getSettings(targetId)
             ]);
 
             setCategories(fetchedCategories || []);
@@ -51,19 +55,29 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    // Initial Load - Multi-tenant Support
     useEffect(() => {
-        refreshData();
+        const init = async () => {
+            // TODO: In the future, getting slug from URL or Domain
+            // For now, we hardcode 'mickeys' as the primary tenant
+            const slug = 'mickeys';
+            const restaurant = await Services.getRestaurantBySlug(slug);
+
+            if (restaurant) {
+                setRestaurantId(restaurant.id);
+                refreshData(restaurant.id);
+            } else {
+                console.error("Restaurant not found:", slug);
+                setLoading(false);
+            }
+        };
+        init();
     }, []);
 
     const addProduct = async (product: Partial<Product>) => {
+        if (!restaurantId) return;
         try {
-            const newProduct = await Services.createProduct(product);
-            // Optimistic update or just push the response
-            // The service returns the mapped DB response which might be in snake_case if not handled well in service
-            // Wait, createProduct in service returns raw DB response. I should probably map it or just refetch.
-            // For simplicity in this turn, I will refetch to ensure consistency, 
-            // but for UX speed, I'll append locally if I can map it.
-            // Let's just refetch products to be safe and simple.
+            await Services.createProduct({ ...product, restaurantId });
             await refreshData();
         } catch (error) {
             console.error("Error adding product:", error);
@@ -72,19 +86,16 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     };
 
     const updateProduct = async (product: Product) => {
-        // Optimistic update
         setProducts(prev => prev.map(p => p.id === product.id ? product : p));
         try {
             await Services.updateProduct(product.id, product);
         } catch (error) {
             console.error("Error updating product:", error);
-            // Revert on error?
             await refreshData();
         }
     };
 
     const deleteProduct = async (id: string) => {
-        // Optimistic
         setProducts(prev => prev.filter(p => p.id !== id));
         try {
             await Services.deleteProduct(id);
@@ -95,21 +106,20 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     };
 
     const updateSettings = async (newSettings: Partial<SiteSettings>) => {
+        if (!restaurantId) return;
         setSettings(prev => ({ ...prev, ...newSettings }));
         try {
-            await Services.updateSettings(newSettings);
+            await Services.updateSettings(restaurantId, newSettings);
         } catch (error) {
             console.error("Error updating settings:", error);
         }
     };
 
-    // Special handling for Bulk Category update (e.g. reorder)
     const updateCategories = async (newCategories: Category[]) => {
-        setCategories(newCategories); // Optimistic
+        setCategories(newCategories);
         try {
-            // Update sort_order for each
             const updates = newCategories.map((cat, index) =>
-                Services.updateCategory(cat.id, { order: index, name: cat.name }) // Passing name just in case, primarily order
+                Services.updateCategory(cat.id, { order: index, name: cat.name })
             );
             await Promise.all(updates);
         } catch (error) {
@@ -119,8 +129,9 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     };
 
     const addCategory = async (category: Partial<Category>) => {
+        if (!restaurantId) return;
         try {
-            await Services.createCategory(category);
+            await Services.createCategory({ ...category, restaurantId });
             await refreshData();
         } catch (error: any) {
             console.error("Error adding category:", error);
@@ -181,7 +192,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
             addCategory,
             deleteCategory,
             uploadImage,
-            refreshData
+            refreshData: () => refreshData()
         }}>
             {children}
         </MenuContext.Provider>

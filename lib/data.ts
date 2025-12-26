@@ -1,6 +1,14 @@
 
+export interface Restaurant {
+  id: string;
+  name: string;
+  slug: string;
+  created_at?: string;
+}
+
 export interface Category {
   id: string;
+  restaurantId?: string;
   name: string;
   nameEn?: string;
   slug: string;
@@ -22,6 +30,7 @@ export interface ProductTag {
 
 export interface Product {
   id: string;
+  restaurantId?: string;
   name: string;
   nameEn?: string;
   description: string;
@@ -37,6 +46,8 @@ export interface Product {
 }
 
 export interface SiteSettings {
+  id?: string;
+  restaurantId?: string;
   themeColor: 'black' | 'red' | 'blue' | 'green' | 'orange';
   darkMode: boolean;
   bannerActive: boolean;

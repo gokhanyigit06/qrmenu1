@@ -1,13 +1,22 @@
 
 import { supabase } from './supabase';
-import { Category, Product, SiteSettings } from './data';
+import { Category, Product, SiteSettings, Restaurant } from './data';
+
+// --- RESTAURANT ---
+
+export async function getRestaurantBySlug(slug: string): Promise<Restaurant | null> {
+    const { data, error } = await supabase.from('restaurants').select('*').eq('slug', slug).single();
+    if (error) return null;
+    return data;
+}
 
 // --- CATEGORIES ---
 
-export async function getCategories() {
+export async function getCategories(restaurantId: string) {
     const { data, error } = await supabase
         .from('categories')
         .select('*')
+        .eq('restaurant_id', restaurantId)
         .order('sort_order', { ascending: true });
 
     if (error) {
@@ -15,11 +24,9 @@ export async function getCategories() {
         return [];
     }
 
-    // Convert DB fields format to App Interface format if needed
-    // DB: name_en, discount_rate
-    // App: nameEn, discountRate
     return data.map((item: any) => ({
         id: item.id,
+        restaurantId: item.restaurant_id,
         name: item.name,
         nameEn: item.name_en,
         slug: item.slug,
@@ -34,7 +41,9 @@ export async function getCategories() {
 }
 
 export async function createCategory(category: Partial<Category>) {
+    if (!category.restaurantId) throw new Error("Restaurant ID is required");
     const dbData = {
+        restaurant_id: category.restaurantId,
         name: category.name,
         name_en: category.nameEn,
         slug: category.slug,
@@ -70,10 +79,11 @@ export async function deleteCategory(id: string) {
 
 // --- PRODUCTS ---
 
-export async function getProducts() {
+export async function getProducts(restaurantId: string) {
     const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('restaurant_id', restaurantId)
         .order('sort_order', { ascending: true });
 
     if (error) {
@@ -83,6 +93,7 @@ export async function getProducts() {
 
     return data.map((item: any) => ({
         id: item.id,
+        restaurantId: item.restaurant_id,
         name: item.name,
         nameEn: item.name_en,
         description: item.description,
@@ -98,7 +109,9 @@ export async function getProducts() {
 }
 
 export async function createProduct(product: Partial<Product>) {
+    if (!product.restaurantId) throw new Error("Restaurant ID is required");
     const dbData = {
+        restaurant_id: product.restaurantId,
         name: product.name,
         name_en: product.nameEn,
         description: product.description,
@@ -144,11 +157,15 @@ export async function deleteProduct(id: string) {
 
 // --- SETTINGS ---
 
-export async function getSettings() {
-    const { data, error } = await supabase.from('settings').select('*').single();
+// --- SETTINGS ---
+
+export async function getSettings(restaurantId: string) {
+    const { data, error } = await supabase.from('settings').select('*').eq('restaurant_id', restaurantId).single();
     if (error) return null;
 
     return {
+        id: data.id,
+        restaurantId: data.restaurant_id,
         themeColor: data.theme_color,
         darkMode: data.dark_mode,
         bannerActive: data.banner_active,
@@ -161,7 +178,7 @@ export async function getSettings() {
     } as SiteSettings;
 }
 
-export async function updateSettings(settings: Partial<SiteSettings>) {
+export async function updateSettings(restaurantId: string, settings: Partial<SiteSettings>) {
     const dbUpdates: any = {};
     if (settings.themeColor !== undefined) dbUpdates.theme_color = settings.themeColor;
     if (settings.darkMode !== undefined) dbUpdates.dark_mode = settings.darkMode;
@@ -173,7 +190,7 @@ export async function updateSettings(settings: Partial<SiteSettings>) {
     if (settings.logoWidth !== undefined) dbUpdates.logo_width = settings.logoWidth;
     if (settings.defaultProductImage !== undefined) dbUpdates.default_product_image = settings.defaultProductImage;
 
-    const { error } = await supabase.from('settings').update(dbUpdates).eq('id', 1);
+    const { error } = await supabase.from('settings').update(dbUpdates).eq('restaurant_id', restaurantId);
     if (error) throw error;
 }
 
