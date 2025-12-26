@@ -58,6 +58,8 @@ export interface SiteSettings {
   popupUrl: string;
   logoUrl: string;
   logoWidth: number;
+  siteName?: string;
+  siteDescription?: string;
   defaultProductImage?: string;
 }
 
