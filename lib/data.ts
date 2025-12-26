@@ -45,6 +45,7 @@ export interface SiteSettings {
   popupUrl: string;
   logoUrl: string;
   logoWidth: number;
+  defaultProductImage?: string;
 }
 
 export const defaultSettings: SiteSettings = {
@@ -55,7 +56,8 @@ export const defaultSettings: SiteSettings = {
   popupActive: false,
   popupUrl: '',
   logoUrl: '',
-  logoWidth: 150
+  logoWidth: 150,
+  defaultProductImage: ''
 };
 
 export const categories: Category[] = [

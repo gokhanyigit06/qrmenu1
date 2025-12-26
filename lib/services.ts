@@ -156,7 +156,8 @@ export async function getSettings() {
         popupActive: data.popup_active,
         popupUrl: data.popup_url,
         logoUrl: data.logo_url,
-        logoWidth: data.logo_width
+        logoWidth: data.logo_width,
+        defaultProductImage: data.default_product_image
     } as SiteSettings;
 }
 
@@ -170,6 +171,7 @@ export async function updateSettings(settings: Partial<SiteSettings>) {
     if (settings.popupUrl !== undefined) dbUpdates.popup_url = settings.popupUrl;
     if (settings.logoUrl !== undefined) dbUpdates.logo_url = settings.logoUrl;
     if (settings.logoWidth !== undefined) dbUpdates.logo_width = settings.logoWidth;
+    if (settings.defaultProductImage !== undefined) dbUpdates.default_product_image = settings.defaultProductImage;
 
     const { error } = await supabase.from('settings').update(dbUpdates).eq('id', 1);
     if (error) throw error;

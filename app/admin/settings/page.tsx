@@ -7,22 +7,37 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function SettingsPage() {
-    const { settings, updateSettings } = useMenu();
+    const { settings, updateSettings, uploadImage } = useMenu();
     // Local state for editing before save, initialized with store settings
     // But since store updates are instant in this app architecture, we can use local state and save to store on "Save".
     // Or just bind directly. For 'Save' button feeling, let's use local state.
     const [localSettings, setLocalSettings] = useState(settings);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Sync local state if context changes (e.g. initial load)
     useEffect(() => {
         setLocalSettings(settings);
     }, [settings]);
 
+    const handleImageUpload = async (file: File, field: 'logoUrl' | 'defaultProductImage') => {
+        if (!file) return;
+        setIsUploading(true);
+        try {
+            const url = await uploadImage(file);
+            setLocalSettings(prev => ({ ...prev, [field]: url }));
+        } catch (error) {
+            alert('Resim yüklenirken hata oluştu.');
+            console.error(error);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     const handleToggle = (key: 'bannerActive' | 'popupActive' | 'darkMode') => {
         setLocalSettings(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
-    const handleChange = (key: 'bannerUrls' | 'popupUrl' | 'themeColor' | 'logoUrl' | 'logoWidth', value: string | string[] | number) => {
+    const handleChange = (key: 'bannerUrls' | 'popupUrl' | 'themeColor' | 'logoUrl' | 'logoWidth' | 'defaultProductImage', value: string | string[] | number) => {
         setLocalSettings(prev => ({ ...prev, [key]: value }));
     };
 
@@ -148,6 +163,73 @@ export default function SettingsPage() {
                                     className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                                     placeholder="150"
                                 />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Default Product Image Settings */}
+                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+                    <div className="mb-6">
+                        <h3 className="text-lg font-bold text-gray-900">Varsayılan Ürün Görseli</h3>
+                        <p className="text-sm text-gray-500">Resmi olmayan ürünler için gösterilecek standart görsel.</p>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <div className="relative flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-gray-300 bg-gray-50 group">
+                            {localSettings.defaultProductImage ? (
+                                <img
+                                    src={localSettings.defaultProductImage}
+                                    alt="Default Product Preview"
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <div className="text-center text-xs text-gray-400">
+                                    <Upload className="mx-auto mb-1 h-5 w-5 opacity-50" />
+                                    Görsel Yok
+                                </div>
+                            )}
+
+                            <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'defaultProductImage')}
+                                />
+                            </label>
+
+                            {isUploading && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-white/80">
+                                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-amber-600" />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex-1 space-y-4">
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Görsel URL</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={localSettings.defaultProductImage || ''}
+                                        onChange={(e) => handleChange('defaultProductImage', e.target.value)}
+                                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                        placeholder="https://..."
+                                    />
+                                    <label className="cursor-pointer rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors">
+                                        Yükle
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'defaultProductImage')}
+                                        />
+                                    </label>
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Bilgisayarınızdan yüklemek için "Yükle" butonunu kullanın veya kutuya tıklayın.
+                                </p>
                             </div>
                         </div>
                     </div>

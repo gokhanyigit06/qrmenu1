@@ -38,13 +38,20 @@ export default function ProductCard({ product, language }: ProductCardProps) {
     // Fallback to amber if unknown
     const activeColorClass = themeTextColors[settings.themeColor || 'black'] || 'text-amber-600';
 
+    // Fallback image logic
+    const imageSrc = (product.image && product.image.length > 5)
+        ? product.image
+        : (settings.defaultProductImage && settings.defaultProductImage.length > 5)
+            ? settings.defaultProductImage
+            : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
+
     return (
         <div className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-md">
 
             {/* Large Top Image */}
             <div className="relative aspect-square w-full bg-white">
                 <Image
-                    src={product.image}
+                    src={imageSrc}
                     alt={displayName}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
