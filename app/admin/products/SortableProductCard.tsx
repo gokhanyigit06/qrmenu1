@@ -1,5 +1,6 @@
 
 import { Product } from '@/lib/data';
+import { useMenu } from '@/lib/store';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Edit2, Eye, EyeOff, GripVertical, Trash2 } from 'lucide-react';
@@ -13,6 +14,7 @@ interface SortableProductCardProps {
 }
 
 export function SortableProductCard({ product, onEdit, onDelete, onToggleActive }: SortableProductCardProps) {
+    const { settings } = useMenu();
     const {
         attributes,
         listeners,
@@ -38,7 +40,7 @@ export function SortableProductCard({ product, onEdit, onDelete, onToggleActive 
             {/* Image & Badge */}
             <div className="relative h-48 w-full bg-gray-100">
                 <Image
-                    src={product.image}
+                    src={product.image && product.image.length > 5 ? product.image : (settings.defaultProductImage || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c')}
                     alt={product.name}
                     fill
                     className="object-cover"
