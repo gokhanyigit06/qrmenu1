@@ -58,9 +58,14 @@ export default function SettingsPage() {
         setLocalSettings(prev => ({ ...prev, bannerUrls: newUrls }));
     };
 
-    const handleSave = () => {
-        updateSettings(localSettings);
-        alert("Ayarlar başarıyla kaydedildi.");
+    const handleSave = async () => {
+        try {
+            await updateSettings(localSettings);
+            alert("Ayarlar başarıyla kaydedildi.");
+        } catch (error) {
+            console.error(error);
+            alert("Ayarlar kaydedilirken hata oluştu! Geliştirici konsolunu kontrol edin.");
+        }
     };
 
     // Theme Colors
