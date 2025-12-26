@@ -8,12 +8,14 @@ import HeroBanner from '@/components/HeroBanner';
 import PromoPopup from '@/components/PromoPopup';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMenu } from '@/lib/store'; // Import context hook
+import { trackPageView } from '@/lib/services';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
   const { products, categories, settings } = useMenu(); // Use global state
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState<'tr' | 'en'>('tr');
+  const [viewTracked, setViewTracked] = useState(false);
 
   // Apply Dark Mode to body
   useEffect(() => {
@@ -23,6 +25,14 @@ export default function Home() {
       document.body.classList.remove('dark');
     }
   }, [settings.darkMode]);
+
+  // Track Page View
+  useEffect(() => {
+    if (settings.restaurantId && !viewTracked) {
+      trackPageView(settings.restaurantId).catch(console.error);
+      setViewTracked(true);
+    }
+  }, [settings.restaurantId, viewTracked]);
 
   useEffect(() => {
     // Simulate data fetching

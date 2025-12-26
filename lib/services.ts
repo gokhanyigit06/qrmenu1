@@ -349,3 +349,46 @@ export async function uploadImage(file: File, bucketName: string = 'qrmenu1-imag
     const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
     return data.publicUrl;
 }
+
+// --- ANALYTICS ---
+
+export async function trackPageView(restaurantId: string) {
+    await supabase.from('analytics').insert([{ restaurant_id: restaurantId, event_type: 'view' }]);
+}
+
+export async function getDashboardStats(restaurantId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // Today's Views
+    const { count: todayCount } = await supabase
+        .from('analytics')
+        .select('*', { count: 'exact', head: true })
+        .eq('restaurant_id', restaurantId)
+        .eq('event_type', 'view')
+        .gte('created_at', today.toISOString());
+
+    // Yesterday's Views
+    const { count: yesterdayCount } = await supabase
+        .from('analytics')
+        .select('*', { count: 'exact', head: true })
+        .eq('restaurant_id', restaurantId)
+        .eq('event_type', 'view')
+        .gte('created_at', yesterday.toISOString())
+        .lt('created_at', today.toISOString());
+
+    // Total Products
+    const { count: productCount } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .eq('restaurant_id', restaurantId);
+
+    return {
+        todayViews: todayCount || 0,
+        yesterdayViews: yesterdayCount || 0,
+        totalProducts: productCount || 0
+    };
+}
