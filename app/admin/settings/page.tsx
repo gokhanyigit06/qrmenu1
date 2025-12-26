@@ -280,7 +280,7 @@ export default function SettingsPage() {
                                 <div key={index} className="flex gap-2">
                                     <input
                                         type="text"
-                                        value={url}
+                                        value={url || ''}
                                         onChange={(e) => handleBannerUrlChange(index, e.target.value)}
                                         className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                                         placeholder="https://..."
@@ -343,7 +343,7 @@ export default function SettingsPage() {
                             <div className="flex gap-2">
                                 <input
                                     type="text"
-                                    value={localSettings.popupUrl}
+                                    value={localSettings.popupUrl || ''}
                                     onChange={(e) => handleChange('popupUrl', e.target.value)}
                                     className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                                     placeholder="https://..."

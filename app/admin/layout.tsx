@@ -36,7 +36,7 @@ export default function AdminLayout({
 
     const handleLogout = () => {
         localStorage.removeItem('qr_admin_session');
-        router.push('/login');
+        window.location.href = '/login'; // Hard reload to clear all states
     };
 
     if (!restaurant) return null;
