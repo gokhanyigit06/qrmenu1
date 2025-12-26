@@ -1,29 +1,56 @@
+'use client';
 
 import {
     CreditCard,
     LayoutDashboard,
+    LogOut,
     Menu,
     Settings,
-    Store,
-    Users
+    Store
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const router = useRouter();
+    const [restaurant, setRestaurant] = useState<{ name: string, slug: string } | null>(null);
+
+    useEffect(() => {
+        const session = localStorage.getItem('qr_admin_session');
+        if (!session) {
+            router.push('/login');
+            return;
+        }
+        try {
+            const data = JSON.parse(session);
+            setRestaurant(data);
+        } catch {
+            router.push('/login');
+        }
+    }, [router]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('qr_admin_session');
+        router.push('/login');
+    };
+
+    if (!restaurant) return null;
+
     return (
         <div className="flex min-h-screen bg-gray-50">
             {/* Sidebar */}
-            <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 pb-10 pt-5 transition-transform">
+            <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 pb-10 pt-5 transition-transform flex flex-col">
                 <div className="px-6 mb-8">
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-amber-500 flex items-center justify-center">
+                    <Link href={`/${restaurant.slug}`} target="_blank" className="flex items-center gap-2 group">
+                        <div className="h-8 w-8 rounded-lg bg-amber-500 flex items-center justify-center group-hover:bg-amber-600 transition-colors">
                             <Store className="h-5 w-5 text-white" />
                         </div>
-                        <span className="text-xl font-bold text-gray-900">QR Admin</span>
+                        <span className="text-xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors">QR Admin</span>
                     </Link>
                 </div>
 
@@ -58,18 +85,25 @@ export default function AdminLayout({
                     </Link>
                 </nav>
 
-                <div className="mt-auto px-4 pt-10">
-                    <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
+                <div className="mt-auto px-4 pt-4 border-t border-gray-100">
+                    <div className="rounded-xl bg-gray-50 p-4 border border-gray-100 mb-3">
                         <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold">
-                                GY
+                            <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold uppercase">
+                                {restaurant.name.substring(0, 2)}
                             </div>
-                            <div>
-                                <p className="text-sm font-bold text-gray-900">Gökhan Y.</p>
-                                <p className="text-xs text-gray-500">Restoran Sahibi</p>
+                            <div className="overflow-hidden">
+                                <p className="text-sm font-bold text-gray-900 truncate">{restaurant.name}</p>
+                                <p className="text-xs text-gray-500 truncate">@{restaurant.slug}</p>
                             </div>
                         </div>
                     </div>
+                    <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                        <LogOut className="h-5 w-5" />
+                        Çıkış Yap
+                    </button>
                 </div>
             </aside>
 

@@ -2,6 +2,7 @@
 
 import { Category, Product, SiteSettings, defaultSettings } from '@/lib/data';
 import * as Services from '@/lib/services';
+import { useParams } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface MenuContextType {
@@ -25,6 +26,7 @@ interface MenuContextType {
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
 export function MenuProvider({ children }: { children: React.ReactNode }) {
+    const params = useParams();
     const [restaurantId, setRestaurantId] = useState<string | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -58,21 +60,48 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     // Initial Load - Multi-tenant Support
     useEffect(() => {
         const init = async () => {
-            // TODO: In the future, getting slug from URL or Domain
-            // For now, we hardcode 'mickeys' as the primary tenant
-            const slug = 'mickeys';
-            const restaurant = await Services.getRestaurantBySlug(slug);
+            let slug: string | null = null;
+            let restaurantIdFromSession: string | null = null;
 
-            if (restaurant) {
-                setRestaurantId(restaurant.id);
-                refreshData(restaurant.id);
+            // 1. Check URL Slug (Client View)
+            if (params?.slug && typeof params.slug === 'string') {
+                slug = params.slug;
+            }
+            // 2. Check LocalStorage (Admin View)
+            // We only check session if we are NOT on a slug page (which implies Admin or Home)
+            else {
+                try {
+                    const session = localStorage.getItem('qr_admin_session');
+                    if (session) {
+                        const data = JSON.parse(session);
+                        if (data.restaurantId) {
+                            restaurantIdFromSession = data.restaurantId;
+                        }
+                    }
+                } catch (e) {
+                    console.error("Session parse error", e);
+                }
+            }
+
+            if (slug) {
+                const restaurant = await Services.getRestaurantBySlug(slug);
+                if (restaurant) {
+                    setRestaurantId(restaurant.id);
+                    refreshData(restaurant.id);
+                } else {
+                    console.error("Restaurant not found:", slug);
+                    setLoading(false);
+                }
+            } else if (restaurantIdFromSession) {
+                setRestaurantId(restaurantIdFromSession);
+                refreshData(restaurantIdFromSession);
             } else {
-                console.error("Restaurant not found:", slug);
+                // Not in a restaurant context (e.g. Home Page or Login Page)
                 setLoading(false);
             }
         };
         init();
-    }, []);
+    }, [params?.slug]);
 
     const addProduct = async (product: Partial<Product>) => {
         if (!restaurantId) return;
