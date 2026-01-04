@@ -133,8 +133,8 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
         setProducts(prev => prev.map(p => p.id === product.id ? product : p));
         try {
             await Services.updateProduct(product.id, product);
-        } catch (error) {
-            console.error("Error updating product:", error);
+        } catch (error: any) {
+            console.error("Error updating product:", error.message || error);
             await refreshData();
         }
     };

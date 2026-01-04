@@ -160,6 +160,7 @@ export async function updateCategory(id: string, updates: Partial<Category>) {
     if (updates.description !== undefined) dbUpdates.description = updates.description;
     if (updates.badge !== undefined) dbUpdates.badge = updates.badge;
     if (updates.discountRate !== undefined) dbUpdates.discount_rate = updates.discountRate;
+    if (updates.order !== undefined) dbUpdates.sort_order = updates.order;
 
     const { error } = await supabase.from('categories').update(dbUpdates).eq('id', id);
     if (error) throw error;
@@ -197,6 +198,8 @@ export async function getProducts(restaurantId: string) {
         categoryId: item.category_id,
         badge: item.badge,
         tags: item.tags || [],
+        allergens: item.allergens || [],
+        variants: item.variants || [],
         isActive: item.is_active
     })) as Product[];
 }
@@ -215,6 +218,8 @@ export async function createProduct(product: Partial<Product>) {
         category_id: product.categoryId,
         badge: product.badge,
         tags: product.tags,
+        allergens: product.allergens,
+        variants: product.variants,
         is_active: product.isActive
     };
 
@@ -236,6 +241,8 @@ export async function updateProduct(id: string, updates: Partial<Product>) {
     if (updates.categoryId !== undefined) dbUpdates.category_id = updates.categoryId;
     if (updates.badge !== undefined) dbUpdates.badge = updates.badge;
     if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+    if (updates.allergens !== undefined) dbUpdates.allergens = updates.allergens;
+    if (updates.variants !== undefined) dbUpdates.variants = updates.variants;
     if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
 
     const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);

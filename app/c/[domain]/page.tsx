@@ -3,6 +3,7 @@
 import CategoryAccordion from '@/components/CategoryAccordion';
 import HeroBanner from '@/components/HeroBanner';
 import PromoPopup from '@/components/PromoPopup';
+import AllergenModal from '@/components/AllergenModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMenu } from '@/lib/store';
 import { trackPageView } from '@/lib/services';
@@ -13,6 +14,7 @@ export default function CustomDomainHome() {
     const [loading, setLoading] = useState(true);
     const [language, setLanguage] = useState<'tr' | 'en'>('tr');
     const [viewTracked, setViewTracked] = useState(false);
+    const [isAllergenModalOpen, setIsAllergenModalOpen] = useState(false);
 
     useEffect(() => {
         if (settings.darkMode) {
@@ -56,6 +58,12 @@ export default function CustomDomainHome() {
                 isActive={settings.popupActive}
             />
 
+            <AllergenModal
+                isOpen={isAllergenModalOpen}
+                onClose={() => setIsAllergenModalOpen(false)}
+                language={language}
+            />
+
             <div className={`bg-white px-4 pb-4 pt-8 shadow-sm sticky top-0 z-30 ${settings.darkMode ? 'dark:bg-gray-900 dark:border-b dark:border-gray-800' : ''}`}>
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col">
@@ -77,7 +85,10 @@ export default function CustomDomainHome() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="text-xs font-bold text-gray-900 uppercase tracking-wide hover:text-amber-600 transition-colors">
+                        <button
+                            onClick={() => setIsAllergenModalOpen(true)}
+                            className="text-xs font-bold text-gray-900 uppercase tracking-wide hover:text-amber-600 transition-colors"
+                        >
                             {language === 'en' ? 'Allergens' : 'Alerjenler'}
                         </button>
                         <button
@@ -94,10 +105,10 @@ export default function CustomDomainHome() {
                 </div>
             </div>
 
-            <main className="px-4 pt-6 max-w-lg mx-auto md:max-w-4xl">
+            <main className="px-2 pt-4 max-w-4xl mx-auto md:max-w-6xl">
                 {loading ? (
                     <div className="space-y-6">
-                        <Skeleton className="h-48 w-full rounded-xl" />
+                        <Skeleton className="h-64 w-full rounded-xl" />
                         {[1, 2, 3].map((i) => (
                             <Skeleton key={i} className="h-24 w-full rounded-2xl" />
                         ))}

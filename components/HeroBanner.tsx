@@ -37,7 +37,7 @@ export default function HeroBanner({ bannerUrls }: HeroBannerProps) {
     if (bannerUrls.length === 0) return null;
 
     return (
-        <div className="relative mb-6 h-48 w-full overflow-hidden rounded-xl shadow-lg sm:h-64 group">
+        <div className="relative mb-6 h-64 w-full overflow-hidden rounded-xl shadow-lg sm:h-96 group">
             {/* Slides */}
             {bannerUrls.map((url, index) => (
                 <div

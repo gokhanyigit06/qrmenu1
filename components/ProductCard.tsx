@@ -2,6 +2,7 @@ import { useMenu } from '@/lib/store';
 import { Product } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { Flame, Leaf, Wheat } from 'lucide-react'; // Icons for tags
+import { ALLERGENS } from '@/lib/allergens';
 import Image from 'next/image';
 
 interface ProductCardProps {
@@ -87,12 +88,32 @@ export default function ProductCard({ product, language }: ProductCardProps) {
                     {displayDescription}
                 </p>
 
+                {/* Allergen Icons */}
+                {product.allergens && product.allergens.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-2">
+                        {product.allergens.map((allergenId) => {
+                            const allergen = ALLERGENS.find(a => a.id === allergenId);
+                            if (!allergen) return null;
+                            const Icon = allergen.icon;
+                            return (
+                                <div
+                                    key={allergenId}
+                                    className="flex items-center justify-center rounded-full bg-gray-100 p-1.5 text-gray-500"
+                                    title={language === 'en' ? allergen.nameEn : allergen.nameTr}
+                                >
+                                    <Icon className={cn("h-4 w-4", allergen.color)} />
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
                 {/* Variants List */}
                 {product.variants && product.variants.length > 0 && (
                     <div className="mb-4 mt-2 space-y-2 border-t border-dashed border-gray-200 pt-3">
                         {product.variants.map((variant, idx) => (
                             <div key={idx} className="flex items-center justify-between text-sm">
-                                <span className="font-medium text-gray-700">{variant.name}</span>
+                                <span className="font-bold text-gray-700">{variant.name}</span>
                                 <span className={cn("font-bold text-base", activeColorClass)}>
                                     {variant.price} ₺
                                 </span>

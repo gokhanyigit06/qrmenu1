@@ -15,26 +15,23 @@ interface CategoryAccordionProps {
 }
 
 export default function CategoryAccordion({ categories, products, language }: CategoryAccordionProps) {
-    // Track open state for each category. Set first one open by default.
-    const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(() => {
+    // Track open state for the active category (only one can be open at a time).
+    const [activeCategoryId, setActiveCategoryId] = useState<string | null>(() => {
         if (categories.length > 0) {
-            return { [categories[0].id]: true };
+            return categories[0].id;
         }
-        return {};
+        return null;
     });
 
     const toggleCategory = (id: string) => {
-        setOpenCategories(prev => ({
-            ...prev,
-            [id]: !prev[id]
-        }));
+        setActiveCategoryId(prev => (prev === id ? null : id));
     };
 
     return (
         <div className="space-y-4">
             {categories.map((category) => {
                 const categoryProducts = products.filter(p => p.categoryId === category.id);
-                const isOpen = openCategories[category.id];
+                const isOpen = activeCategoryId === category.id;
                 const displayName = language === 'en' && category.nameEn ? category.nameEn : category.name;
 
                 // Filter out categories with no products

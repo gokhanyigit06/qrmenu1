@@ -29,6 +29,8 @@ create table products (
   image text,
   badge text,
   tags jsonb default '[]'::jsonb, -- Stores tags like [{id:1, name:'Spicy'}]
+  allergens text[] default array[]::text[],
+  variants jsonb default '[]'::jsonb, -- Stores variants like [{name:'Porsiyon', price:100}]
   sort_order int default 0,
   is_active boolean default true,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null

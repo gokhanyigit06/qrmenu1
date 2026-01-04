@@ -2,6 +2,7 @@ import { useMenu } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
 import { Product, ProductTag } from '@/lib/data';
+import { ALLERGENS } from '@/lib/allergens';
 import { Flame, Leaf, Wheat, Loader2, Trash2, Plus } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -34,6 +35,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
         image: '',
         categoryId: '',
         tags: [],
+        allergens: [],
         variants: [],
     });
 
@@ -51,6 +53,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                 image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
                 categoryId: categories[0]?.id || '',
                 tags: [],
+                allergens: [],
                 variants: [],
             });
         }
@@ -94,6 +97,17 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
         }
     };
 
+    const toggleAllergen = (allergenId: string) => {
+        const currentAllergens = formData.allergens || [];
+        const exists = currentAllergens.includes(allergenId);
+
+        if (exists) {
+            setFormData({ ...formData, allergens: currentAllergens.filter(id => id !== allergenId) });
+        } else {
+            setFormData({ ...formData, allergens: [...currentAllergens, allergenId] });
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSave(formData as Product);
@@ -128,7 +142,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                     required
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                 />
                             </div>
                             <div>
@@ -139,7 +153,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                     type="text"
                                     value={formData.nameEn || ''}
                                     onChange={e => setFormData({ ...formData, nameEn: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black bg-gray-50"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black bg-gray-50 text-gray-900"
                                     placeholder="Opsiyonel (English Name)"
                                 />
                             </div>
@@ -148,9 +162,9 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                 <label className="mb-1 block text-sm font-medium text-gray-700">Açıklama</label>
                                 <textarea
                                     rows={3}
-                                    value={formData.description}
+                                    value={formData.description || ''}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                 />
                             </div>
                             <div>
@@ -161,7 +175,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                     rows={2}
                                     value={formData.descriptionEn || ''}
                                     onChange={e => setFormData({ ...formData, descriptionEn: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black bg-gray-50"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black bg-gray-50 text-gray-900"
                                     placeholder="Opsiyonel (English Description)"
                                 />
                             </div>
@@ -181,7 +195,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                                 const newPrice = parseFloat(e.target.value);
                                                 setFormData({ ...formData, price: newPrice });
                                             }}
-                                            className="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                            className="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                         />
                                     </div>
                                 </div>
@@ -195,7 +209,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                             step="0.01"
                                             value={formData.discountPrice || ''}
                                             onChange={e => setFormData({ ...formData, discountPrice: e.target.value ? parseFloat(e.target.value) : undefined })}
-                                            className="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                            className="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                             placeholder="Opsiyonel"
                                         />
                                     </div>
@@ -227,7 +241,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                     <select
                                         value={formData.badge || ''}
                                         onChange={e => setFormData({ ...formData, badge: e.target.value || undefined })}
-                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                     >
                                         <option value="">Yok</option>
                                         <option value="Çok Satan">Çok Satan</option>
@@ -255,7 +269,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                 <select
                                     value={formData.categoryId}
                                     onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                 >
                                     {categories.map(cat => (
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -274,9 +288,9 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                         <input
                                             type="text"
                                             placeholder="Görsel URL..."
-                                            value={formData.image}
+                                            value={formData.image || ''}
                                             onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-sm"
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-sm text-gray-900"
                                         />
                                     </div>
 
@@ -375,6 +389,32 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                 </div>
                             </div>
 
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-gray-700">Alerjenler</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {ALLERGENS.map(allergen => {
+                                        const isSelected = formData.allergens?.includes(allergen.id);
+                                        const Icon = allergen.icon;
+                                        return (
+                                            <button
+                                                key={allergen.id}
+                                                type="button"
+                                                onClick={() => toggleAllergen(allergen.id)}
+                                                className={cn(
+                                                    "flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium border text-left transition-colors",
+                                                    isSelected
+                                                        ? "bg-amber-50 text-amber-900 border-amber-200"
+                                                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                                                )}
+                                            >
+                                                <Icon className={cn("h-4 w-4 shrink-0", allergen.color)} />
+                                                <span className="truncate">{allergen.nameTr}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
                             {/* Variants Section */}
                             <div className="pt-2">
                                 <label className="mb-2 block text-sm font-medium text-gray-700">Varyantlar / Porsiyonlar</label>
@@ -386,7 +426,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                                 placeholder="İsim (Küçük vb.)"
                                                 value={variant.name}
                                                 onChange={(e) => updateVariant(index, 'name', e.target.value)}
-                                                className="flex-1 rounded-lg border border-gray-300 px-2 py-1.5 text-xs outline-none focus:border-black"
+                                                className="flex-1 rounded-lg border border-gray-300 px-2 py-1.5 text-xs outline-none focus:border-black text-gray-900"
                                                 required
                                             />
                                             <input
@@ -394,7 +434,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                                 placeholder="Fiyat"
                                                 value={variant.price}
                                                 onChange={(e) => updateVariant(index, 'price', e.target.value)}
-                                                className="w-20 rounded-lg border border-gray-300 px-2 py-1.5 text-xs outline-none focus:border-black text-right"
+                                                className="w-20 rounded-lg border border-gray-300 px-2 py-1.5 text-xs outline-none focus:border-black text-right text-gray-900"
                                                 required
                                             />
                                             <button

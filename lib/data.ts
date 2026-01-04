@@ -42,6 +42,7 @@ export interface Product {
   categoryId: string;
   badge?: string;
   tags?: ProductTag[];
+  allergens?: string[];
   isActive?: boolean;
   sortOrder?: number;
   variants?: { name: string; price: number }[];

@@ -6,16 +6,19 @@
 import CategoryAccordion from '@/components/CategoryAccordion';
 import HeroBanner from '@/components/HeroBanner';
 import PromoPopup from '@/components/PromoPopup';
+import AllergenModal from '@/components/AllergenModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMenu } from '@/lib/store'; // Import context hook
 import { trackPageView } from '@/lib/services';
 import { useEffect, useState } from 'react';
+import { ArrowUp } from 'lucide-react';
 
 export default function Home() {
   const { products, categories, settings } = useMenu(); // Use global state
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState<'tr' | 'en'>('tr');
   const [viewTracked, setViewTracked] = useState(false);
+  const [isAllergenModalOpen, setIsAllergenModalOpen] = useState(false);
 
   // Apply Dark Mode to body
   useEffect(() => {
@@ -42,6 +45,26 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Back to Top Logic
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Dynamic Theme Colors
   const themeColors: Record<string, string> = {
     black: 'text-gray-900',
@@ -63,6 +86,12 @@ export default function Home() {
       <PromoPopup
         imageUrl={settings.popupUrl}
         isActive={settings.popupActive}
+      />
+
+      <AllergenModal
+        isOpen={isAllergenModalOpen}
+        onClose={() => setIsAllergenModalOpen(false)}
+        language={language}
       />
 
       {/* Header / Brand Area */}
@@ -87,7 +116,10 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="text-xs font-bold text-gray-900 uppercase tracking-wide hover:text-amber-600 transition-colors">
+            <button
+              onClick={() => setIsAllergenModalOpen(true)}
+              className="text-xs font-bold text-gray-900 uppercase tracking-wide hover:text-amber-600 transition-colors"
+            >
               {language === 'en' ? 'Allergens' : 'Alerjenler'}
             </button>
             <button
@@ -104,11 +136,11 @@ export default function Home() {
         </div>
       </div>
 
-      <main className="px-4 pt-6 max-w-lg mx-auto md:max-w-4xl">
+      <main className="px-2 pt-4 max-w-4xl mx-auto md:max-w-6xl">
         {loading ? (
           <div className="space-y-6">
             {/* Banner Skeleton */}
-            <Skeleton className="h-48 w-full rounded-xl" />
+            <Skeleton className="h-64 w-full rounded-xl" />
 
             {/* Accordion Skeletons */}
             {[1, 2, 3].map((i) => (
@@ -139,6 +171,16 @@ export default function Home() {
       </main>
 
       {/* Floating Action / Cart Button */}
+
+      {/* Back to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-6 right-6 z-50 rounded-full bg-black/80 p-3 text-white shadow-lg backdrop-blur transition-all duration-300 hover:bg-black ${showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
+          }`}
+        aria-label="Back to Top"
+      >
+        <ArrowUp className="h-6 w-6" />
+      </button>
 
     </div>
   );
