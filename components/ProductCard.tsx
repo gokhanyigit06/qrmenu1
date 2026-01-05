@@ -27,18 +27,24 @@ export default function ProductCard({ product, language, onClick }: ProductCardP
         }
     };
 
-    // Dynamic Text Color based on theme
-    const themeTextColors: Record<string, string> = {
-        black: 'text-amber-600', // Black theme uses Amber for contrast
-        white: 'text-black', // White theme uses Black for prices
-        blue: 'text-blue-600',
-        orange: 'text-orange-600',
-        red: 'text-red-600',
-        green: 'text-green-600'
-    };
+    // Dynamic Styles from Settings
+    const titleSize = {
+        medium: 'text-lg',
+        large: 'text-xl',
+        xl: 'text-2xl'
+    }[settings.productTitleSize || 'large'];
 
-    // Fallback to amber if unknown
-    const activeColorClass = themeTextColors[settings.themeColor || 'black'] || 'text-amber-600';
+    const descriptionSize = {
+        small: 'text-xs',
+        medium: 'text-sm',
+        large: 'text-base'
+    }[settings.productDescriptionSize || 'medium'];
+
+    const priceSize = {
+        medium: 'text-lg',
+        large: 'text-xl',
+        xl: 'text-2xl'
+    }[settings.productPriceSize || 'large'];
 
     // Fallback image logic
     const imageSrc = (product.image && product.image.length > 5)
@@ -72,23 +78,39 @@ export default function ProductCard({ product, language, onClick }: ProductCardP
             <div className="flex flex-1 flex-col p-6">
                 {/* Title and Price Row */}
                 <div className="mb-2 flex items-start justify-between gap-4">
-                    <h3 className="font-serif text-xl font-bold uppercase leading-tight tracking-wide text-gray-900">
+                    <h3
+                        className={cn("font-serif font-bold uppercase leading-tight tracking-wide", titleSize)}
+                        style={{ color: settings.productTitleColor }}
+                    >
                         {displayName}
                     </h3>
                     <div className="flex flex-col items-end">
                         {product.discountPrice ? (
                             <>
                                 <span className="text-xs text-gray-400 line-through">₺{product.price}</span>
-                                <span className={cn("text-xl font-bold", activeColorClass)}>₺{product.discountPrice}</span>
+                                <span
+                                    className={cn("font-bold", priceSize)}
+                                    style={{ color: settings.productPriceColor }}
+                                >
+                                    ₺{product.discountPrice}
+                                </span>
                             </>
                         ) : (
-                            <span className={cn("text-xl font-bold", activeColorClass)}>₺{product.price}</span>
+                            <span
+                                className={cn("font-bold", priceSize)}
+                                style={{ color: settings.productPriceColor }}
+                            >
+                                ₺{product.price}
+                            </span>
                         )}
                     </div>
                 </div>
 
                 {/* Description */}
-                <p className="mb-4 text-sm leading-relaxed text-gray-500">
+                <p
+                    className={cn("mb-4 leading-relaxed", descriptionSize)}
+                    style={{ color: settings.productDescriptionColor }}
+                >
                     {displayDescription}
                 </p>
 
@@ -118,7 +140,10 @@ export default function ProductCard({ product, language, onClick }: ProductCardP
                         {product.variants.map((variant, idx) => (
                             <div key={idx} className="flex items-center justify-between text-sm">
                                 <span className="font-bold text-gray-700">{variant.name}</span>
-                                <span className={cn("font-bold text-base", activeColorClass)}>
+                                <span
+                                    className={cn("font-bold text-base")}
+                                    style={{ color: settings.productPriceColor }}
+                                >
                                     {variant.price} ₺
                                 </span>
                             </div>

@@ -113,7 +113,7 @@ export async function getCategories(restaurantId: string) {
         .order('sort_order', { ascending: true });
 
     if (error) {
-        console.error('Error fetching categories:', error);
+        console.error(`Error fetching categories (id: ${restaurantId}):`, JSON.stringify(error, null, 2));
         return [];
     }
 
@@ -181,7 +181,7 @@ export async function getProducts(restaurantId: string) {
         .order('sort_order', { ascending: true });
 
     if (error) {
-        console.error('Error fetching products:', error);
+        console.error(`Error fetching products (id: ${restaurantId}):`, JSON.stringify(error, null, 2));
         return [];
     }
 
@@ -278,13 +278,19 @@ export async function getSettings(restaurantId: string) {
         popupActive: data.popup_active,
         popupUrl: data.popup_url,
         logoUrl: data.logo_url,
-        logoWidth: data.logo_width,
+        logoWidth: data.logo_width || 150,
         defaultProductImage: data.default_product_image,
         categoryFontSize: data.category_font_size || 'large',
         categoryFontWeight: data.category_font_weight || 'black',
         categoryRowHeight: data.category_row_height || 'medium',
         categoryGap: data.category_gap || 'medium',
-        categoryOverlayOpacity: data.category_overlay_opacity !== null ? data.category_overlay_opacity : 50
+        categoryOverlayOpacity: data.category_overlay_opacity !== null ? data.category_overlay_opacity : 50,
+        productTitleColor: data.product_title_color || '#111827',
+        productDescriptionColor: data.product_description_color || '#6b7280',
+        productPriceColor: data.product_price_color || '#d97706',
+        productTitleSize: data.product_title_size || 'large',
+        productDescriptionSize: data.product_description_size || 'medium',
+        productPriceSize: data.product_price_size || 'large',
     } as SiteSettings;
 }
 
@@ -310,6 +316,15 @@ export async function updateSettings(restaurantId: string, settings: Partial<Sit
     if (settings.categoryGap !== undefined) dbUpdates.category_gap = settings.categoryGap;
     if (settings.categoryOverlayOpacity !== undefined) dbUpdates.category_overlay_opacity = settings.categoryOverlayOpacity;
 
+    // Product Styling
+    if (settings.productTitleColor !== undefined) dbUpdates.product_title_color = settings.productTitleColor;
+    if (settings.productDescriptionColor !== undefined) dbUpdates.product_description_color = settings.productDescriptionColor;
+    if (settings.productPriceColor !== undefined) dbUpdates.product_price_color = settings.productPriceColor;
+    if (settings.productTitleSize !== undefined) dbUpdates.product_title_size = settings.productTitleSize;
+    if (settings.productDescriptionSize !== undefined) dbUpdates.product_description_size = settings.productDescriptionSize;
+    if (settings.productPriceSize !== undefined) dbUpdates.product_price_size = settings.productPriceSize;
+
+    if (Object.keys(dbUpdates).length === 0) return;
     const { error } = await supabase.from('settings').update(dbUpdates).eq('restaurant_id', restaurantId);
     if (error) throw error;
 }

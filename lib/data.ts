@@ -72,6 +72,14 @@ export interface SiteSettings {
   categoryRowHeight?: 'small' | 'medium' | 'large';
   categoryGap?: 'small' | 'medium' | 'large';
   categoryOverlayOpacity?: number;
+
+  // Product Card Styling
+  productTitleColor?: string;
+  productDescriptionColor?: string;
+  productPriceColor?: string;
+  productTitleSize?: 'medium' | 'large' | 'xl';
+  productDescriptionSize?: 'small' | 'medium' | 'large';
+  productPriceSize?: 'medium' | 'large' | 'xl';
 }
 
 export const defaultSettings: SiteSettings = {

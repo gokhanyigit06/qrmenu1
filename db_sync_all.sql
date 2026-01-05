@@ -18,5 +18,13 @@ ALTER TABLE settings ADD COLUMN IF NOT EXISTS banner_tag TEXT DEFAULT 'FIRSAT';
 ALTER TABLE settings ADD COLUMN IF NOT EXISTS banner_title TEXT DEFAULT 'Kampanya';
 ALTER TABLE settings ADD COLUMN IF NOT EXISTS banner_subtitle TEXT DEFAULT '%20 İndirim';
 
--- 4. Custom Domain (Just in case)
+-- 4. Product Card Styling Columns (NEW)
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS product_title_color TEXT DEFAULT '#111827';
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS product_description_color TEXT DEFAULT '#6b7280';
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS product_price_color TEXT DEFAULT '#d97706';
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS product_title_size TEXT DEFAULT 'large';
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS product_description_size TEXT DEFAULT 'medium';
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS product_price_size TEXT DEFAULT 'large';
+
+-- 5. Custom Domain
 ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS custom_domain TEXT;

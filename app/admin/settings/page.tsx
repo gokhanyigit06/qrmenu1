@@ -344,6 +344,121 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
+
+
+                {/* Product Card Styling */}
+                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+                    <div className="mb-6">
+                        <h3 className="text-lg font-bold text-gray-900">Ürün Kartı Görünümü</h3>
+                        <p className="text-sm text-gray-500">Ürün listesindeki kartların yazı tipi ve renk ayarları.</p>
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+                        {/* Product Title Styling */}
+                        <div className="space-y-3">
+                            <label className="block text-sm font-bold text-gray-900">Ürün Başlığı</label>
+
+                            {/* Color */}
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="color"
+                                    value={localSettings.productTitleColor || '#111827'}
+                                    onChange={(e) => handleChange('productTitleColor', e.target.value)}
+                                    className="h-8 w-8 cursor-pointer rounded border-0 p-0"
+                                />
+                                <span className="text-sm text-gray-500 font-mono">{localSettings.productTitleColor || '#111827'}</span>
+                            </div>
+
+                            {/* Size */}
+                            <div className="flex gap-2">
+                                {['medium', 'large', 'xl'].map((size) => (
+                                    <button
+                                        key={size}
+                                        onClick={() => handleChange('productTitleSize', size as any)}
+                                        className={`flex-1 rounded-lg border py-1.5 text-xs font-medium transition-all ${localSettings.productTitleSize === size
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                    >
+                                        {size === 'medium' ? 'Normal' : size === 'large' ? 'Büyük' : 'XL'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Product Description Styling */}
+                        <div className="space-y-3">
+                            <label className="block text-sm font-bold text-gray-900">Açıklama Metni</label>
+
+                            {/* Color */}
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="color"
+                                    value={localSettings.productDescriptionColor || '#6b7280'}
+                                    onChange={(e) => handleChange('productDescriptionColor', e.target.value)}
+                                    className="h-8 w-8 cursor-pointer rounded border-0 p-0"
+                                />
+                                <span className="text-sm text-gray-500 font-mono">{localSettings.productDescriptionColor || '#6b7280'}</span>
+                            </div>
+
+                            {/* Size */}
+                            <div className="flex gap-2">
+                                {['small', 'medium', 'large'].map((size) => (
+                                    <button
+                                        key={size}
+                                        onClick={() => handleChange('productDescriptionSize', size as any)}
+                                        className={`flex-1 rounded-lg border py-1.5 text-xs font-medium transition-all ${localSettings.productDescriptionSize === size
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                    >
+                                        {size === 'small' ? 'Küçük' : size === 'medium' ? 'Normal' : 'Büyük'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Product Price Styling */}
+                        <div className="space-y-3">
+                            <label className="block text-sm font-bold text-gray-900">Fiyat Etiketi</label>
+
+                            {/* Color */}
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="color"
+                                    value={localSettings.productPriceColor || '#d97706'}
+                                    onChange={(e) => handleChange('productPriceColor', e.target.value)}
+                                    className="h-8 w-8 cursor-pointer rounded border-0 p-0"
+                                />
+                                <span className="text-sm text-gray-500 font-mono">{localSettings.productPriceColor || '#d97706'}</span>
+                            </div>
+
+                            {/* Size */}
+                            <div className="flex gap-2">
+                                {['medium', 'large', 'xl'].map((size) => (
+                                    <button
+                                        key={size}
+                                        onClick={() => handleChange('productPriceSize', size as any)}
+                                        className={`flex-1 rounded-lg border py-1.5 text-xs font-medium transition-all ${localSettings.productPriceSize === size
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                    >
+                                        {size === 'medium' ? 'Normal' : size === 'large' ? 'Büyük' : 'XL'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* Live Preview Tip */}
+                    <div className="mt-4 rounded-lg bg-amber-50 p-3 text-xs text-amber-800 border-l-4 border-amber-500">
+                        <p><strong>İpucu:</strong> Değişiklikleri kaydettikten sonra menü sayfasını yenileyerek sonucu görebilirsiniz.</p>
+                    </div>
+                </div>
+
                 {/* Logo Settings */}
                 <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
                     <div className="mb-6">
@@ -756,6 +871,6 @@ export default function SettingsPage() {
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
