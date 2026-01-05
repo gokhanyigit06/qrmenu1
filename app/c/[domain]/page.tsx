@@ -119,6 +119,10 @@ export default function CustomDomainHome() {
                             <HeroBanner
                                 bannerUrls={settings.bannerUrls}
                                 mobileBannerUrls={settings.mobileBannerUrls}
+                                overlayVisible={settings.bannerOverlayVisible}
+                                tag={settings.bannerTag}
+                                title={settings.bannerTitle}
+                                subtitle={settings.bannerSubtitle}
                             />
                         )}
 
