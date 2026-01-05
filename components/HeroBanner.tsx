@@ -7,9 +7,10 @@ import { useEffect, useState } from 'react';
 
 interface HeroBannerProps {
     bannerUrls: string[];
+    mobileBannerUrls?: string[];
 }
 
-export default function HeroBanner({ bannerUrls }: HeroBannerProps) {
+export default function HeroBanner({ bannerUrls, mobileBannerUrls = [] }: HeroBannerProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -37,7 +38,7 @@ export default function HeroBanner({ bannerUrls }: HeroBannerProps) {
     if (bannerUrls.length === 0) return null;
 
     return (
-        <div className="relative mb-6 h-64 w-full overflow-hidden rounded-xl shadow-lg sm:h-96 group">
+        <div className="relative mb-6 aspect-square w-full overflow-hidden rounded-xl shadow-lg sm:aspect-auto sm:h-96 group">
             {/* Slides */}
             {bannerUrls.map((url, index) => (
                 <div
@@ -45,13 +46,27 @@ export default function HeroBanner({ bannerUrls }: HeroBannerProps) {
                     className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100' : 'opacity-0 z-0'
                         } ${index === currentIndex ? 'z-10' : ''}`}
                 >
-                    <Image
-                        src={url}
-                        alt={`Kampanya Banner ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        priority={index === 0}
-                    />
+                    {/* Desktop Image (Hidden on mobile) */}
+                    <div className="hidden sm:block absolute inset-0">
+                        <Image
+                            src={url}
+                            alt={`Kampanya Banner ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                        />
+                    </div>
+                    {/* Mobile Image (Visible on mobile only) */}
+                    <div className="block sm:hidden absolute inset-0">
+                        <Image
+                            src={(mobileBannerUrls && mobileBannerUrls[index]) ? mobileBannerUrls[index] : url}
+                            alt={`Kampanya Banner ${index + 1}`}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                        />
+                    </div>
+
                     <div className="absolute inset-0 bg-gradient-to-r from-amber-900/40 to-transparent" />
                 </div>
             ))}

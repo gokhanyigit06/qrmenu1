@@ -116,7 +116,10 @@ export default function CustomDomainHome() {
                 ) : (
                     <>
                         {settings.bannerActive && (
-                            <HeroBanner bannerUrls={settings.bannerUrls} />
+                            <HeroBanner
+                                bannerUrls={settings.bannerUrls}
+                                mobileBannerUrls={settings.mobileBannerUrls}
+                            />
                         )}
 
                         <div className="mb-4 flex items-center justify-between px-1">

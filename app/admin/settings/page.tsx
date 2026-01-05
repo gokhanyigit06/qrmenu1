@@ -127,15 +127,46 @@ export default function SettingsPage() {
         setLocalSettings(prev => ({ ...prev, bannerUrls: newUrls }));
     };
 
+    const handleMobileBannerUrlChange = (index: number, value: string) => {
+        const newUrls = [...(localSettings.mobileBannerUrls || [])];
+        // Ensure array is long enough, though addBannerUrl should handle this, strictly speaking safer here
+        while (newUrls.length <= index) newUrls.push('');
+        newUrls[index] = value;
+        setLocalSettings(prev => ({ ...prev, mobileBannerUrls: newUrls }));
+    };
+
+    const handleBannerUpload = async (file: File, index: number, type: 'desktop' | 'mobile') => {
+        if (!file) return;
+        setIsUploading(true);
+        try {
+            const url = await uploadImage(file);
+            if (type === 'desktop') {
+                handleBannerUrlChange(index, url);
+            } else {
+                handleMobileBannerUrlChange(index, url);
+            }
+        } catch (error) {
+            alert('Resim yüklenirken hata oluştu.');
+            console.error(error);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     const addBannerUrl = () => {
         if (localSettings.bannerUrls.length < 5) {
-            setLocalSettings(prev => ({ ...prev, bannerUrls: [...prev.bannerUrls, ''] }));
+            setLocalSettings(prev => ({
+                ...prev,
+                bannerUrls: [...prev.bannerUrls, ''],
+                mobileBannerUrls: [...(prev.mobileBannerUrls || []), '']
+            }));
         }
     };
 
     const removeBannerUrl = (index: number) => {
         const newUrls = localSettings.bannerUrls.filter((_, i) => i !== index);
-        setLocalSettings(prev => ({ ...prev, bannerUrls: newUrls }));
+        const newMobileUrls = (localSettings.mobileBannerUrls || []).filter((_, i) => i !== index);
+        setLocalSettings(prev => ({ ...prev, bannerUrls: newUrls, mobileBannerUrls: newMobileUrls }));
     };
 
     const handleSave = async () => {
@@ -279,8 +310,8 @@ export default function SettingsPage() {
                                         key={gap}
                                         onClick={() => handleChange('categoryGap', gap as any)}
                                         className={`flex-1 rounded-lg border py-2 text-sm font-medium transition-all ${localSettings.categoryGap === gap
-                                                ? 'bg-gray-900 text-white border-gray-900'
-                                                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
                                         {gap === 'small' ? 'Az' : gap === 'medium' ? 'Normal' : 'Seyrek'}
@@ -465,22 +496,64 @@ export default function SettingsPage() {
                         <div className="space-y-3">
                             <label className="mb-1 block text-sm font-medium text-gray-700">Görsel URL'leri</label>
                             {localSettings.bannerUrls.map((url, index) => (
-                                <div key={index} className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        value={url || ''}
-                                        onChange={(e) => handleBannerUrlChange(index, e.target.value)}
-                                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                                        placeholder="https://..."
-                                    />
-                                    {localSettings.bannerUrls.length > 1 && (
-                                        <button
-                                            onClick={() => removeBannerUrl(index)}
-                                            className="rounded-lg bg-red-50 px-3 py-2 text-red-600 hover:bg-red-100"
-                                        >
-                                            Sil
-                                        </button>
-                                    )}
+                                <div key={index} className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Slayt {index + 1}</span>
+                                        {localSettings.bannerUrls.length > 1 && (
+                                            <button
+                                                onClick={() => removeBannerUrl(index)}
+                                                className="text-xs font-medium text-red-600 hover:text-red-800"
+                                            >
+                                                Sil
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Desktop Banner */}
+                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
+                                        <span className="w-20 text-xs font-medium text-gray-500">Masaüstü:</span>
+                                        <div className="flex flex-1 gap-2">
+                                            <input
+                                                type="text"
+                                                value={url || ''}
+                                                onChange={(e) => handleBannerUrlChange(index, e.target.value)}
+                                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                                placeholder="Masaüstü görsel URL..."
+                                            />
+                                            <label className="cursor-pointer rounded-lg bg-white border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                                Yükle
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={(e) => e.target.files?.[0] && handleBannerUpload(e.target.files[0], index, 'desktop')}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Mobile Banner */}
+                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
+                                        <span className="w-20 text-xs font-medium text-gray-500">Mobil:</span>
+                                        <div className="flex flex-1 gap-2">
+                                            <input
+                                                type="text"
+                                                value={localSettings.mobileBannerUrls?.[index] || ''}
+                                                onChange={(e) => handleMobileBannerUrlChange(index, e.target.value)}
+                                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                                placeholder="Mobil görsel URL (isteğe bağlı)..."
+                                            />
+                                            <label className="cursor-pointer rounded-lg bg-white border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                                Yükle
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={(e) => e.target.files?.[0] && handleBannerUpload(e.target.files[0], index, 'mobile')}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                             {localSettings.bannerUrls.length < 5 && (

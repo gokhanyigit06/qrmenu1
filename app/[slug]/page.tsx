@@ -151,7 +151,10 @@ export default function Home() {
           <>
             {/* Banner Section */}
             {settings.bannerActive && (
-              <HeroBanner bannerUrls={settings.bannerUrls} />
+              <HeroBanner
+                bannerUrls={settings.bannerUrls}
+                mobileBannerUrls={settings.mobileBannerUrls}
+              />
             )}
 
             {/* Title before list */}

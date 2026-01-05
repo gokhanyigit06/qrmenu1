@@ -270,6 +270,7 @@ export async function getSettings(restaurantId: string) {
         darkMode: data.dark_mode,
         bannerActive: data.banner_active,
         bannerUrls: data.banner_urls,
+        mobileBannerUrls: data.mobile_banner_urls || [],
         popupActive: data.popup_active,
         popupUrl: data.popup_url,
         logoUrl: data.logo_url,
@@ -289,6 +290,7 @@ export async function updateSettings(restaurantId: string, settings: Partial<Sit
     if (settings.darkMode !== undefined) dbUpdates.dark_mode = settings.darkMode;
     if (settings.bannerActive !== undefined) dbUpdates.banner_active = settings.bannerActive;
     if (settings.bannerUrls !== undefined) dbUpdates.banner_urls = settings.bannerUrls;
+    if (settings.mobileBannerUrls !== undefined) dbUpdates.mobile_banner_urls = settings.mobileBannerUrls;
     if (settings.popupActive !== undefined) dbUpdates.popup_active = settings.popupActive;
     if (settings.popupUrl !== undefined) dbUpdates.popup_url = settings.popupUrl;
     if (settings.logoUrl !== undefined) dbUpdates.logo_url = settings.logoUrl;
