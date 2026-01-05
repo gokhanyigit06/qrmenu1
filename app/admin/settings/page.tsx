@@ -200,11 +200,12 @@ export default function SettingsPage() {
                 {/* Theme Settings */}
                 <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
                     <div className="mb-6">
-                        <h3 className="text-lg font-bold text-gray-900">Tema ve Renkler</h3>
-                        <p className="text-sm text-gray-500">Menünüzün genel renk temasını belirleyin.</p>
+                        <h3 className="text-lg font-bold text-gray-900">Görünüm & Tema</h3>
+                        <p className="text-sm text-gray-500">Menünüzün genel renk, font ve stilini belirleyin.</p>
                     </div>
 
-                    <div className="grid gap-6 md:grid-cols-2">
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {/* Theme Color */}
                         <div>
                             <label className="mb-3 block text-sm font-bold text-gray-700">Ana Renk</label>
                             <div className="flex flex-wrap gap-3">
@@ -212,19 +213,40 @@ export default function SettingsPage() {
                                     <button
                                         key={color.value}
                                         onClick={() => handleChange('themeColor', color.value)}
-                                        className={`flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all ${localSettings.themeColor === color.value ? 'border-gray-900 scale-110' : 'border-transparent hover:scale-105'}`}
+                                        className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${localSettings.themeColor === color.value ? 'border-gray-900 scale-110' : 'border-transparent hover:scale-105'}`}
                                         title={color.name}
                                     >
-                                        <div className={`h-8 w-8 rounded-full shadow-sm ${color.class}`} />
+                                        <div className={`h-6 w-6 rounded-full shadow-sm ${color.class}`} />
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between rounded-xl bg-gray-50 p-4 border border-gray-100">
+                        {/* Font Family Selection */}
+                        <div>
+                            <label className="mb-3 block text-sm font-bold text-gray-700">Yazı Fontu</label>
+                            <select
+                                value={localSettings.fontFamily || 'Inter'}
+                                onChange={(e) => handleChange('fontFamily', e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                            >
+                                <option value="Inter">Inter (Standart Modern)</option>
+                                <option value="Roboto">Roboto (Android Tarzı)</option>
+                                <option value="Lato">Lato (Yuvarlak & Samimi)</option>
+                                <option value="Montserrat">Montserrat (Geometrik & Şık)</option>
+                                <option value="Open Sans">Open Sans (Okunaklı)</option>
+                                <option value="Playfair Display">Playfair Display (Serif & Zarif)</option>
+                                <option value="Merriweather">Merriweather (Klasik Serif)</option>
+                                <option value="Oswald">Oswald (Dik & Sıkışık)</option>
+                                <option value="Raleway">Raleway (İnce & Modern)</option>
+                            </select>
+                        </div>
+
+                        {/* Dark Mode */}
+                        <div className="flex items-center justify-between rounded-xl bg-gray-50 p-4 border border-gray-100 h-full">
                             <div>
-                                <h4 className="font-bold text-gray-900">Koyu Mod (Dark Mode)</h4>
-                                <p className="text-xs text-gray-500">Müşteriler için koyu tema seçeneğini aktif et.</p>
+                                <h4 className="font-bold text-gray-900">Koyu Mod</h4>
+                                <p className="text-xs text-gray-500">Müşteriler için koyu tema seçeneği.</p>
                             </div>
                             <button
                                 onClick={() => handleToggle('darkMode')}
