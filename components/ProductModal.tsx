@@ -91,8 +91,8 @@ export default function ProductModal({ isOpen, onClose, product, language }: Pro
 
                 {/* Details */}
                 <div className="p-8">
-                    <h2 className="font-serif text-3xl font-black uppercase leading-tight tracking-wide text-gray-900 mb-2">
-                        {displayName}
+                    <h2 className="font-serif text-3xl font-black leading-tight tracking-wide text-gray-900 mb-2">
+                        {displayName.toLocaleUpperCase('tr-TR')}
                     </h2>
 
                     <div className="flex items-center gap-3 mb-6">

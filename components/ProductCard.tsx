@@ -63,10 +63,10 @@ export default function ProductCard({ product, language, onClick, layoutMode = '
             >
                 <div className="flex items-center justify-between gap-4">
                     <h3
-                        className={cn("font-serif font-bold uppercase leading-tight tracking-wide", titleSize)}
+                        className={cn("font-serif font-bold leading-tight tracking-wide", titleSize)}
                         style={{ color: settings.productTitleColor }}
                     >
-                        {displayName}
+                        {displayName.toLocaleUpperCase('tr-TR')}
                     </h3>
                     <div className="flex flex-col items-end shrink-0">
                         {product.discountPrice ? (
@@ -110,10 +110,10 @@ export default function ProductCard({ product, language, onClick, layoutMode = '
             >
                 {/* Header */}
                 <h3
-                    className={cn("font-serif font-bold uppercase leading-tight tracking-wide mb-3 pb-3 border-b border-gray-100 border-dashed", titleSize)}
+                    className={cn("font-serif font-bold leading-tight tracking-wide mb-3 pb-3 border-b border-gray-100 border-dashed", titleSize)}
                     style={{ color: settings.productTitleColor }}
                 >
-                    {displayName}
+                    {displayName.toLocaleUpperCase('tr-TR')}
                 </h3>
 
                 {/* Variants List (Explicit) */}
@@ -191,10 +191,10 @@ export default function ProductCard({ product, language, onClick, layoutMode = '
                 {/* Title and Price Row */}
                 <div className="mb-2 flex items-start justify-between gap-4">
                     <h3
-                        className={cn("font-serif font-bold uppercase leading-tight tracking-wide", titleSize)}
+                        className={cn("font-serif font-bold leading-tight tracking-wide", titleSize)}
                         style={{ color: settings.productTitleColor }}
                     >
-                        {displayName}
+                        {displayName.toLocaleUpperCase('tr-TR')}
                     </h3>
                     <div className="flex flex-col items-end">
                         {product.discountPrice ? (

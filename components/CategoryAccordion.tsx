@@ -132,8 +132,8 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                                                 {displayName}
                                             </h3>
                                             {category.badge && (
-                                                <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
-                                                    {category.badge}
+                                                <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white shadow-sm">
+                                                    {category.badge.toLocaleUpperCase('tr-TR')}
                                                 </span>
                                             )}
                                         </div>

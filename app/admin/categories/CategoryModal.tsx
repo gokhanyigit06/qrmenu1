@@ -149,7 +149,7 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                             <div className="flex gap-2">
                                 <input
                                     type="text"
-                                    value={formData.image}
+                                    value={formData.image || ''}
                                     onChange={e => setFormData({ ...formData, image: e.target.value })}
                                     className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-sm"
                                     placeholder="Görsel URL..."
