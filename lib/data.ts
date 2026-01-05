@@ -52,6 +52,7 @@ export interface SiteSettings {
   id?: string;
   restaurantId?: string;
   themeColor: 'black' | 'red' | 'blue' | 'green' | 'orange';
+  fontFamily?: string;
   darkMode: boolean;
   bannerActive: boolean;
   bannerUrls: string[];

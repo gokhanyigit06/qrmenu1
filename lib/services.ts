@@ -267,6 +267,7 @@ export async function getSettings(restaurantId: string) {
         id: data.id,
         restaurantId: data.restaurant_id,
         themeColor: data.theme_color,
+        fontFamily: data.font_family || 'Inter',
         darkMode: data.dark_mode,
         bannerActive: data.banner_active,
         bannerUrls: data.banner_urls,
@@ -297,6 +298,7 @@ export async function getSettings(restaurantId: string) {
 export async function updateSettings(restaurantId: string, settings: Partial<SiteSettings>) {
     const dbUpdates: any = {};
     if (settings.themeColor !== undefined) dbUpdates.theme_color = settings.themeColor;
+    if (settings.fontFamily !== undefined) dbUpdates.font_family = settings.fontFamily;
     if (settings.darkMode !== undefined) dbUpdates.dark_mode = settings.darkMode;
     if (settings.bannerActive !== undefined) dbUpdates.banner_active = settings.bannerActive;
     if (settings.bannerUrls !== undefined) dbUpdates.banner_urls = settings.bannerUrls;
