@@ -279,8 +279,8 @@ export default function SettingsPage() {
                                         key={gap}
                                         onClick={() => handleChange('categoryGap', gap as any)}
                                         className={`flex-1 rounded-lg border py-2 text-sm font-medium transition-all ${localSettings.categoryGap === gap
-                                            ? 'bg-gray-900 text-white border-gray-900'
-                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                                ? 'bg-gray-900 text-white border-gray-900'
+                                                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
                                         {gap === 'small' ? 'Az' : gap === 'medium' ? 'Normal' : 'Seyrek'}
@@ -288,6 +288,28 @@ export default function SettingsPage() {
                                 ))}
                             </div>
                         </div>
+
+                        {/* Overlay Opacity */}
+                        <div className="col-span-1 md:col-span-2">
+                            <label className="mb-2 flex justify-between text-sm font-bold text-gray-700">
+                                <span>Görsel Karartma (Overlay)</span>
+                                <span className="text-gray-500 font-normal">%{localSettings.categoryOverlayOpacity ?? 50}</span>
+                            </label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="90"
+                                step="10"
+                                value={localSettings.categoryOverlayOpacity ?? 50}
+                                onChange={(e) => handleChange('categoryOverlayOpacity', parseInt(e.target.value))}
+                                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black"
+                            />
+                            <div className="mt-1 flex justify-between text-xs text-gray-400">
+                                <span>Yok (Aydınlık)</span>
+                                <span>Koyu</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 

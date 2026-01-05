@@ -93,10 +93,15 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                                     )}
                                 />
                                 {/* Dynamic Gradient Overlay based on state */}
-                                <div className={cn(
-                                    "absolute inset-0 transition-opacity duration-300",
-                                    isOpen ? "bg-black/70" : "bg-black/50"
-                                )} />
+                                <div
+                                    className={cn(
+                                        "absolute inset-0 transition-opacity duration-300",
+                                        isOpen ? "bg-black/70" : ""
+                                    )}
+                                    style={{
+                                        backgroundColor: isOpen ? undefined : `rgba(0,0,0, ${settings.categoryOverlayOpacity !== undefined && settings.categoryOverlayOpacity !== null ? settings.categoryOverlayOpacity / 100 : 0.5})`
+                                    }}
+                                />
                             </div>
 
                             {/* Content */}

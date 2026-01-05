@@ -66,6 +66,7 @@ export interface SiteSettings {
   categoryFontWeight?: 'normal' | 'bold' | 'black';
   categoryRowHeight?: 'small' | 'medium' | 'large';
   categoryGap?: 'small' | 'medium' | 'large';
+  categoryOverlayOpacity?: number;
 }
 
 export const defaultSettings: SiteSettings = {
