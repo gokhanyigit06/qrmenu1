@@ -98,6 +98,26 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                         />
                     </div>
 
+                    <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">Görünüm Modu</label>
+                        <select
+                            value={formData.layoutMode || 'grid'}
+                            onChange={e => setFormData({ ...formData, layoutMode: e.target.value as any })}
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                        >
+                            <option value="grid">Standart (Görsel + Kart)</option>
+                            <option value="list">Liste (Görselsiz + Varyasyonlu)</option>
+                            <option value="list-no-image">Minimal (Görselsiz + Sade)</option>
+                        </select>
+                        <p className="mt-1 text-xs text-gray-500">
+                            {formData.layoutMode === 'list'
+                                ? 'Şarap/İçecek menüsü için uygundur. Ürün adı ve varyasyonlar alt alta listelenir.'
+                                : formData.layoutMode === 'list-no-image'
+                                    ? 'Kokteyl menüsü için uygundur. Sadece isim ve fiyat görünür.'
+                                    : 'Standart yemek menüsü görünümü.'}
+                        </p>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-700">İndirim Oranı (%)</label>

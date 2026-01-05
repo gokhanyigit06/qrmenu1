@@ -129,7 +129,8 @@ export async function getCategories(restaurantId: string) {
         discountRate: item.discount_rate,
         parentId: item.parent_id,
         order: item.sort_order,
-        isActive: item.is_active
+        isActive: item.is_active,
+        layoutMode: item.layout_mode || 'grid'
     })) as Category[];
 }
 
@@ -144,7 +145,8 @@ export async function createCategory(category: Partial<Category>) {
         description: category.description,
         badge: category.badge,
         discount_rate: category.discountRate,
-        sort_order: category.order || 0
+        sort_order: category.order || 0,
+        layout_mode: category.layoutMode || 'grid'
     };
 
     const { data, error } = await supabase.from('categories').insert([dbData]).select().single();
@@ -161,6 +163,7 @@ export async function updateCategory(id: string, updates: Partial<Category>) {
     if (updates.badge !== undefined) dbUpdates.badge = updates.badge;
     if (updates.discountRate !== undefined) dbUpdates.discount_rate = updates.discountRate;
     if (updates.order !== undefined) dbUpdates.sort_order = updates.order;
+    if (updates.layoutMode !== undefined) dbUpdates.layout_mode = updates.layoutMode;
 
     const { error } = await supabase.from('categories').update(dbUpdates).eq('id', id);
     if (error) throw error;

@@ -20,6 +20,7 @@ export interface Category {
   badge?: string;
   order?: number;
   isActive?: boolean;
+  layoutMode?: 'grid' | 'list' | 'list-no-image';
 }
 
 export interface ProductTag {

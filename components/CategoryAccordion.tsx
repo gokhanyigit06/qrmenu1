@@ -179,6 +179,7 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                                                 key={product.id}
                                                 product={product}
                                                 language={language}
+                                                layoutMode={category.layoutMode || 'grid'}
                                                 onClick={() => handleProductClick(product)}
                                             />
                                         ))}
