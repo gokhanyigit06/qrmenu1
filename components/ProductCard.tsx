@@ -8,9 +8,10 @@ import Image from 'next/image';
 interface ProductCardProps {
     product: Product;
     language: 'tr' | 'en';
+    onClick?: () => void;
 }
 
-export default function ProductCard({ product, language }: ProductCardProps) {
+export default function ProductCard({ product, language, onClick }: ProductCardProps) {
     const { settings } = useMenu();
 
     const displayName = language === 'en' && product.nameEn ? product.nameEn : product.name;
@@ -47,7 +48,10 @@ export default function ProductCard({ product, language }: ProductCardProps) {
             : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c';
 
     return (
-        <div className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+        <div
+            onClick={onClick}
+            className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-md cursor-pointer"
+        >
 
             {/* Large Top Image */}
             <div className="relative aspect-square w-full bg-white">
