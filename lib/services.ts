@@ -124,6 +124,7 @@ export async function getCategories(restaurantId: string) {
         nameEn: item.name_en,
         slug: item.slug,
         image: item.image,
+        icon: item.icon,
         description: item.description,
         badge: item.badge,
         discountRate: item.discount_rate,
@@ -142,6 +143,7 @@ export async function createCategory(category: Partial<Category>) {
         name_en: category.nameEn,
         slug: category.slug,
         image: category.image,
+        icon: category.icon,
         description: category.description,
         badge: category.badge,
         discount_rate: category.discountRate,
@@ -159,6 +161,7 @@ export async function updateCategory(id: string, updates: Partial<Category>) {
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.nameEn !== undefined) dbUpdates.name_en = updates.nameEn;
     if (updates.image !== undefined) dbUpdates.image = updates.image;
+    if (updates.icon !== undefined) dbUpdates.icon = updates.icon;
     if (updates.description !== undefined) dbUpdates.description = updates.description;
     if (updates.badge !== undefined) dbUpdates.badge = updates.badge;
     if (updates.discountRate !== undefined) dbUpdates.discount_rate = updates.discountRate;

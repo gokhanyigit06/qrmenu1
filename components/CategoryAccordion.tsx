@@ -127,15 +127,35 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                                 {/* (Same header content code) */}
                                 <div className="relative z-10 flex w-full items-center justify-between px-6">
                                     <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <h3 className={`${currentFontSize} ${currentFontWeight} text-white drop-shadow-md tracking-tight`}>
-                                                {displayName}
-                                            </h3>
-                                            {category.badge && (
-                                                <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white shadow-sm">
-                                                    {category.badge.toLocaleUpperCase('tr-TR')}
-                                                </span>
+                                        <div className="flex items-center gap-3">
+                                            {/* Category Icon */}
+                                            {category.icon && (
+                                                <div className="relative h-12 w-12 shrink-0 drop-shadow-lg transition-transform duration-300 group-hover:scale-110">
+                                                    {category.icon.startsWith('http') ? (
+                                                        <Image
+                                                            src={category.icon}
+                                                            alt=""
+                                                            fill
+                                                            className="object-contain"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-4xl">{category.icon}</span>
+                                                    )}
+                                                </div>
                                             )}
+
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center gap-2">
+                                                    <h3 className={`${currentFontSize} ${currentFontWeight} text-white drop-shadow-md tracking-tight`}>
+                                                        {displayName}
+                                                    </h3>
+                                                    {category.badge && (
+                                                        <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white shadow-sm">
+                                                            {category.badge.toLocaleUpperCase('tr-TR')}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
 
                                         {category.description && (

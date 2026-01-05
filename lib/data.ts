@@ -15,6 +15,7 @@ export interface Category {
   slug: string;
   parentId?: string;
   image?: string;
+  icon?: string;
   description?: string;
   discountRate?: number;
   badge?: string;

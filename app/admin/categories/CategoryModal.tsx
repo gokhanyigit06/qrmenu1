@@ -203,6 +203,70 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                         </div>
                     </div>
 
+                    {/* Icon Field */}
+                    <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">Kategori İkonu / Sticker</label>
+                        <div className="flex gap-4 items-start">
+                            <div className="flex-1 space-y-3">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={formData.icon || ''}
+                                        onChange={e => setFormData({ ...formData, icon: e.target.value })}
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-sm"
+                                        placeholder="İkon URL veya Emoji..."
+                                    />
+                                </div>
+
+                                {/* Icon File Input */}
+                                <div className="flex items-center justify-center w-full flex-col">
+                                    <label className={cn(
+                                        "flex flex-col items-center justify-center w-full h-16 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors",
+                                        isUploading && "opacity-50 cursor-not-allowed"
+                                    )}>
+                                        <div className="flex flex-col items-center justify-center pt-2 pb-2">
+                                            <p className="text-[10px] text-gray-400">İkon Yükle (PNG/WEBP)</p>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            disabled={isUploading}
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setIsUploading(true);
+                                                    try {
+                                                        const url = await uploadImage(file);
+                                                        setFormData(prev => ({ ...prev, icon: url }));
+                                                    } catch (error) {
+                                                        console.error("Upload failed", error);
+                                                        alert("Resim yüklenirken hata oluştu.");
+                                                    } finally {
+                                                        setIsUploading(false);
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Icon Preview */}
+                            <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 flex items-center justify-center">
+                                {formData.icon ? (
+                                    formData.icon.startsWith('http') ? (
+                                        <img src={formData.icon} alt="Icon" className="h-16 w-16 object-contain" />
+                                    ) : (
+                                        <span className="text-4xl">{formData.icon}</span>
+                                    )
+                                ) : (
+                                    <span className="text-xs text-gray-400 text-center px-2">Önizleme</span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                         <button
                             type="button"
