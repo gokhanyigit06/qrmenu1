@@ -107,11 +107,11 @@ export default function Home() {
               />
             ) : (
               <h1 className={`text-2xl font-black tracking-tight ${settings.darkMode ? 'dark:text-white' : 'text-gray-900'}`}>
-                MICKEY'S <span className={`${accentColor} text-3xl leading-3`}>.</span>
+                {settings.siteName || "MICKEY'S"} <span className={`${accentColor} text-3xl leading-3`}>.</span>
               </h1>
             )}
             <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-              Cafe & Bistro
+              {settings.siteDescription || "Cafe & Bistro"}
             </span>
           </div>
 
