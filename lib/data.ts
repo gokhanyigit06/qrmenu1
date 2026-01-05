@@ -62,6 +62,10 @@ export interface SiteSettings {
   siteName?: string;
   siteDescription?: string;
   defaultProductImage?: string;
+  categoryFontSize?: 'medium' | 'large' | 'xl';
+  categoryFontWeight?: 'normal' | 'bold' | 'black';
+  categoryRowHeight?: 'small' | 'medium' | 'large';
+  categoryGap?: 'small' | 'medium' | 'large';
 }
 
 export const defaultSettings: SiteSettings = {

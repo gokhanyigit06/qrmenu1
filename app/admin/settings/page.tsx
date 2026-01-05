@@ -117,7 +117,7 @@ export default function SettingsPage() {
         setLocalSettings(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
-    const handleChange = (key: 'bannerUrls' | 'popupUrl' | 'themeColor' | 'logoUrl' | 'logoWidth' | 'defaultProductImage', value: string | string[] | number) => {
+    const handleChange = (key: string, value: string | string[] | number) => {
         setLocalSettings(prev => ({ ...prev, [key]: value }));
     };
 
@@ -201,6 +201,92 @@ export default function SettingsPage() {
                             >
                                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition shadow duration-200 ease-in-out ${localSettings.darkMode ? 'translate-x-6' : 'translate-x-1'}`} />
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Category Styling Settings */}
+                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+                    <div className="mb-6">
+                        <h3 className="text-lg font-bold text-gray-900">Kategori Görünümü</h3>
+                        <p className="text-sm text-gray-500">Müşteri menüsündeki kategorilerin boyut ve yerleşim ayarları.</p>
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {/* Font Size */}
+                        <div>
+                            <label className="mb-2 block text-sm font-bold text-gray-700">Başlık Boyutu</label>
+                            <div className="flex gap-2">
+                                {['medium', 'large', 'xl'].map((size) => (
+                                    <button
+                                        key={size}
+                                        onClick={() => handleChange('categoryFontSize', size as any)}
+                                        className={`flex-1 rounded-lg border py-2 text-sm font-medium transition-all ${localSettings.categoryFontSize === size
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                    >
+                                        {size === 'medium' ? 'Orta' : size === 'large' ? 'Büyük' : 'Çok Büyük'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Font Weight */}
+                        <div>
+                            <label className="mb-2 block text-sm font-bold text-gray-700">Başlık Kalınlığı</label>
+                            <div className="flex gap-2">
+                                {['normal', 'bold', 'black'].map((weight) => (
+                                    <button
+                                        key={weight}
+                                        onClick={() => handleChange('categoryFontWeight', weight as any)}
+                                        className={`flex-1 rounded-lg border py-2 text-sm font-medium transition-all ${localSettings.categoryFontWeight === weight
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                    >
+                                        {weight === 'normal' ? 'Normal' : weight === 'bold' ? 'Kalın' : 'Extra Kalın'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Row Height */}
+                        <div>
+                            <label className="mb-2 block text-sm font-bold text-gray-700">Kategori Yüksekliği</label>
+                            <div className="flex gap-2">
+                                {['small', 'medium', 'large'].map((height) => (
+                                    <button
+                                        key={height}
+                                        onClick={() => handleChange('categoryRowHeight', height as any)}
+                                        className={`flex-1 rounded-lg border py-2 text-sm font-medium transition-all ${localSettings.categoryRowHeight === height
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                    >
+                                        {height === 'small' ? 'İnce' : height === 'medium' ? 'Orta' : 'Geniş'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Gap */}
+                        <div>
+                            <label className="mb-2 block text-sm font-bold text-gray-700">Boşluklar</label>
+                            <div className="flex gap-2">
+                                {['small', 'medium', 'large'].map((gap) => (
+                                    <button
+                                        key={gap}
+                                        onClick={() => handleChange('categoryGap', gap as any)}
+                                        className={`flex-1 rounded-lg border py-2 text-sm font-medium transition-all ${localSettings.categoryGap === gap
+                                            ? 'bg-gray-900 text-white border-gray-900'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                    >
+                                        {gap === 'small' ? 'Az' : gap === 'medium' ? 'Normal' : 'Seyrek'}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

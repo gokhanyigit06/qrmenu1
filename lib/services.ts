@@ -274,7 +274,11 @@ export async function getSettings(restaurantId: string) {
         popupUrl: data.popup_url,
         logoUrl: data.logo_url,
         logoWidth: data.logo_width,
-        defaultProductImage: data.default_product_image
+        defaultProductImage: data.default_product_image,
+        categoryFontSize: data.category_font_size || 'large',
+        categoryFontWeight: data.category_font_weight || 'black',
+        categoryRowHeight: data.category_row_height || 'medium',
+        categoryGap: data.category_gap || 'medium'
     } as SiteSettings;
 }
 
@@ -289,6 +293,10 @@ export async function updateSettings(restaurantId: string, settings: Partial<Sit
     if (settings.logoUrl !== undefined) dbUpdates.logo_url = settings.logoUrl;
     if (settings.logoWidth !== undefined) dbUpdates.logo_width = settings.logoWidth;
     if (settings.defaultProductImage !== undefined) dbUpdates.default_product_image = settings.defaultProductImage;
+    if (settings.categoryFontSize !== undefined) dbUpdates.category_font_size = settings.categoryFontSize;
+    if (settings.categoryFontWeight !== undefined) dbUpdates.category_font_weight = settings.categoryFontWeight;
+    if (settings.categoryRowHeight !== undefined) dbUpdates.category_row_height = settings.categoryRowHeight;
+    if (settings.categoryGap !== undefined) dbUpdates.category_gap = settings.categoryGap;
 
     const { error } = await supabase.from('settings').update(dbUpdates).eq('restaurant_id', restaurantId);
     if (error) throw error;

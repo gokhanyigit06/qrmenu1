@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { useState } from 'react';
 import ProductCard from './ProductCard';
 
+import { useMenu } from '@/lib/store';
+
 interface CategoryAccordionProps {
     categories: Category[];
     products: Product[];
@@ -15,6 +17,8 @@ interface CategoryAccordionProps {
 }
 
 export default function CategoryAccordion({ categories, products, language }: CategoryAccordionProps) {
+    const { settings } = useMenu();
+
     // Track open state for the active category (only one can be open at a time).
     const [activeCategoryId, setActiveCategoryId] = useState<string | null>(() => {
         if (categories.length > 0) {
@@ -27,8 +31,38 @@ export default function CategoryAccordion({ categories, products, language }: Ca
         setActiveCategoryId(prev => (prev === id ? null : id));
     };
 
+    // Styling Maps
+    const gapMap = {
+        small: 'space-y-2',
+        medium: 'space-y-4',
+        large: 'space-y-8'
+    };
+
+    const heightMap = {
+        small: 'h-20',
+        medium: 'h-28',
+        large: 'h-40'
+    };
+
+    const fontSizeMap = {
+        medium: 'text-xl',
+        large: 'text-3xl',
+        xl: 'text-5xl'
+    };
+
+    const fontWeightMap = {
+        normal: 'font-medium',
+        bold: 'font-bold',
+        black: 'font-black'
+    };
+
+    const currentGap = gapMap[settings.categoryGap || 'medium'];
+    const currentHeight = heightMap[settings.categoryRowHeight || 'medium'];
+    const currentFontSize = fontSizeMap[settings.categoryFontSize || 'large'];
+    const currentFontWeight = fontWeightMap[settings.categoryFontWeight || 'black'];
+
     return (
-        <div className="space-y-4">
+        <div className={currentGap}>
             {categories.map((category) => {
                 const categoryProducts = products.filter(p => p.categoryId === category.id);
                 const isOpen = activeCategoryId === category.id;
@@ -45,7 +79,7 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                         {/* Accordion Header / Trigger */}
                         <button
                             onClick={() => toggleCategory(category.id)}
-                            className="relative flex h-28 w-full items-center overflow-hidden text-left"
+                            className={`relative flex ${currentHeight} w-full items-center overflow-hidden text-left`}
                         >
                             {/* Background Image */}
                             <div className="absolute inset-0 z-0">
@@ -69,7 +103,7 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                             <div className="relative z-10 flex w-full items-center justify-between px-6">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-2xl font-black text-white drop-shadow-md tracking-tight">
+                                        <h3 className={`${currentFontSize} ${currentFontWeight} text-white drop-shadow-md tracking-tight`}>
                                             {displayName}
                                         </h3>
                                         {category.badge && (
