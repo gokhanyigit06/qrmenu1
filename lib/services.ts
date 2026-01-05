@@ -271,6 +271,10 @@ export async function getSettings(restaurantId: string) {
         bannerActive: data.banner_active,
         bannerUrls: data.banner_urls,
         mobileBannerUrls: data.mobile_banner_urls || [],
+        bannerOverlayVisible: data.banner_overlay_visible !== false, // default true
+        bannerTag: data.banner_tag || 'FIRSAT',
+        bannerTitle: data.banner_title || 'Kampanya',
+        bannerSubtitle: data.banner_subtitle || '%20 İndirim',
         popupActive: data.popup_active,
         popupUrl: data.popup_url,
         logoUrl: data.logo_url,
@@ -291,6 +295,10 @@ export async function updateSettings(restaurantId: string, settings: Partial<Sit
     if (settings.bannerActive !== undefined) dbUpdates.banner_active = settings.bannerActive;
     if (settings.bannerUrls !== undefined) dbUpdates.banner_urls = settings.bannerUrls;
     if (settings.mobileBannerUrls !== undefined) dbUpdates.mobile_banner_urls = settings.mobileBannerUrls;
+    if (settings.bannerOverlayVisible !== undefined) dbUpdates.banner_overlay_visible = settings.bannerOverlayVisible;
+    if (settings.bannerTag !== undefined) dbUpdates.banner_tag = settings.bannerTag;
+    if (settings.bannerTitle !== undefined) dbUpdates.banner_title = settings.bannerTitle;
+    if (settings.bannerSubtitle !== undefined) dbUpdates.banner_subtitle = settings.bannerSubtitle;
     if (settings.popupActive !== undefined) dbUpdates.popup_active = settings.popupActive;
     if (settings.popupUrl !== undefined) dbUpdates.popup_url = settings.popupUrl;
     if (settings.logoUrl !== undefined) dbUpdates.logo_url = settings.logoUrl;

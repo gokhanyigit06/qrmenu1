@@ -8,9 +8,20 @@ import { useEffect, useState } from 'react';
 interface HeroBannerProps {
     bannerUrls: string[];
     mobileBannerUrls?: string[];
+    overlayVisible?: boolean;
+    tag?: string;
+    title?: string;
+    subtitle?: string;
 }
 
-export default function HeroBanner({ bannerUrls, mobileBannerUrls = [] }: HeroBannerProps) {
+export default function HeroBanner({
+    bannerUrls,
+    mobileBannerUrls = [],
+    overlayVisible = true,
+    tag = 'FIRSAT',
+    title = 'Kampanya',
+    subtitle = '%20 İndirim'
+}: HeroBannerProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -67,20 +78,29 @@ export default function HeroBanner({ bannerUrls, mobileBannerUrls = [] }: HeroBa
                         />
                     </div>
 
-                    <div className="absolute inset-0 bg-gradient-to-r from-amber-900/40 to-transparent" />
+                    {/* Gradient Overlay */}
+                    {overlayVisible && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-amber-900/40 to-transparent" />
+                    )}
                 </div>
             ))}
 
             {/* Content Overlay (Static for now, but could be dynamic per slide) */}
-            <div className="absolute bottom-6 left-6 z-20 max-w-xs text-white">
-                <span className="inline-block rounded-lg bg-amber-500 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-sm">
-                    Fırsat
-                </span>
-                <h2 className="mt-2 text-2xl font-black leading-tight drop-shadow-lg">
-                    Kokteyllerde <br />
-                    <span className="text-amber-400">%20 İndirim</span>
-                </h2>
-            </div>
+            {overlayVisible && (
+                <div className="absolute bottom-6 left-6 z-20 max-w-xs text-white">
+                    {tag && (
+                        <span className="inline-block rounded-lg bg-amber-500 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-sm">
+                            {tag}
+                        </span>
+                    )}
+                    {(title || subtitle) && (
+                        <h2 className="mt-2 text-2xl font-black leading-tight drop-shadow-lg">
+                            {title} <br />
+                            <span className="text-amber-400">{subtitle}</span>
+                        </h2>
+                    )}
+                </div>
+            )}
 
             {/* Navigation Controls (Only if multiple) */}
             {bannerUrls.length > 1 && (

@@ -565,6 +565,61 @@ export default function SettingsPage() {
                                 </button>
                             )}
                         </div>
+
+                        {/* Banner Text Settings */}
+                        <div className="mt-8 border-t border-gray-200 pt-6">
+                            <h4 className="mb-4 font-bold text-gray-900">Banner Metin Ayarları</h4>
+
+                            <div className="mb-4">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={localSettings.bannerOverlayVisible !== false}
+                                        onChange={(e) => handleChange('bannerOverlayVisible', e.target.checked as any)}
+                                        className="h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">Metin ve Karartma Göster</span>
+                                </label>
+                                <p className="ml-6 mt-1 text-xs text-gray-500">
+                                    Seçili değilse banner üzerinde yazı ve karatma efekti görünmez, sadece resim görünür.
+                                </p>
+                            </div>
+
+                            {localSettings.bannerOverlayVisible !== false && (
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div>
+                                        <label className="mb-1 block text-sm font-medium text-gray-700">Etiket (Örn: FIRSAT)</label>
+                                        <input
+                                            type="text"
+                                            value={localSettings.bannerTag || ''}
+                                            onChange={(e) => handleChange('bannerTag', e.target.value)}
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                            placeholder="FIRSAT"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-1 block text-sm font-medium text-gray-700">Başlık (Örn: Kampanya)</label>
+                                        <input
+                                            type="text"
+                                            value={localSettings.bannerTitle || ''}
+                                            onChange={(e) => handleChange('bannerTitle', e.target.value)}
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                            placeholder="Kampanya"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-1 block text-sm font-medium text-gray-700">Alt Başlık (Örn: %20 İndirim)</label>
+                                        <input
+                                            type="text"
+                                            value={localSettings.bannerSubtitle || ''}
+                                            onChange={(e) => handleChange('bannerSubtitle', e.target.value)}
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                            placeholder="%20 İndirim"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 

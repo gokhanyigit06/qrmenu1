@@ -55,6 +55,10 @@ export interface SiteSettings {
   darkMode: boolean;
   bannerActive: boolean;
   bannerUrls: string[];
+  bannerOverlayVisible?: boolean;
+  bannerTag?: string;
+  bannerTitle?: string;
+  bannerSubtitle?: string;
   mobileBannerUrls?: string[];
   popupActive: boolean;
   popupUrl: string;
