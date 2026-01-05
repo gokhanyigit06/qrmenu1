@@ -7,7 +7,7 @@ export const config = {
     ],
 };
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
     const url = req.nextUrl;
     let hostname = req.headers.get("host") || '';
     hostname = hostname.replace(':3000', '');
