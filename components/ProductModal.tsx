@@ -96,19 +96,23 @@ export default function ProductModal({ isOpen, onClose, product, language }: Pro
                     </h2>
 
                     <div className="flex items-center gap-3 mb-6">
-                        {product.discountPrice ? (
-                            <>
+                        {(product.variants && product.variants.length > 0) ? (
+                            null
+                        ) : (
+                            product.discountPrice ? (
+                                <>
+                                    <span className={cn("text-3xl font-bold", activeColorClass)}>
+                                        ₺{product.discountPrice}
+                                    </span>
+                                    <span className="text-lg text-gray-400 line-through font-medium">
+                                        ₺{product.price}
+                                    </span>
+                                </>
+                            ) : (
                                 <span className={cn("text-3xl font-bold", activeColorClass)}>
-                                    ₺{product.discountPrice}
-                                </span>
-                                <span className="text-lg text-gray-400 line-through font-medium">
                                     ₺{product.price}
                                 </span>
-                            </>
-                        ) : (
-                            <span className={cn("text-3xl font-bold", activeColorClass)}>
-                                ₺{product.price}
-                            </span>
+                            )
                         )}
                     </div>
 

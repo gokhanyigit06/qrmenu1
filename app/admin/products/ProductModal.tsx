@@ -48,7 +48,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                 nameEn: '',
                 description: '',
                 descriptionEn: '',
-                price: 0,
+                price: undefined,
                 discountPrice: undefined,
                 image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
                 categoryId: categories[0]?.id || '',
@@ -187,14 +187,15 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₺</span>
                                         <input
                                             type="number"
-                                            required
                                             min="0"
                                             step="0.01"
-                                            value={formData.price}
+                                            value={formData.price === undefined || formData.price === null ? '' : formData.price}
                                             onChange={e => {
-                                                const newPrice = parseFloat(e.target.value);
+                                                const val = e.target.value;
+                                                const newPrice = val === '' ? undefined : parseFloat(val);
                                                 setFormData({ ...formData, price: newPrice });
                                             }}
+                                            placeholder="Opsiyonel"
                                             className="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                         />
                                     </div>

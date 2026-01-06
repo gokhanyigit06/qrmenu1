@@ -69,23 +69,25 @@ export default function ProductCard({ product, language, onClick, layoutMode = '
                         {displayName.toLocaleUpperCase('tr-TR')}
                     </h3>
                     <div className="flex flex-col items-end shrink-0">
-                        {product.discountPrice ? (
-                            <div className="flex flex-col items-end">
-                                <span className="text-xs text-gray-400 line-through">₺{product.price}</span>
+                        {(product.price !== undefined && product.price !== null && (!product.variants || product.variants.length === 0)) && (
+                            product.discountPrice ? (
+                                <div className="flex flex-col items-end">
+                                    <span className="text-xs text-gray-400 line-through">₺{product.price}</span>
+                                    <span
+                                        className={cn("font-bold", priceSize)}
+                                        style={{ color: settings.productPriceColor }}
+                                    >
+                                        ₺{product.discountPrice}
+                                    </span>
+                                </div>
+                            ) : (
                                 <span
                                     className={cn("font-bold", priceSize)}
                                     style={{ color: settings.productPriceColor }}
                                 >
-                                    ₺{product.discountPrice}
+                                    ₺{product.price}
                                 </span>
-                            </div>
-                        ) : (
-                            <span
-                                className={cn("font-bold", priceSize)}
-                                style={{ color: settings.productPriceColor }}
-                            >
-                                ₺{product.price}
-                            </span>
+                            )
                         )}
                     </div>
                 </div>
@@ -140,23 +142,25 @@ export default function ProductCard({ product, language, onClick, layoutMode = '
                 ) : (
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-400">Tek Fiyat</span>
-                        {product.discountPrice ? (
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-400 line-through">₺{product.price}</span>
+                        {(product.price !== undefined && product.price !== null) && (
+                            product.discountPrice ? (
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-400 line-through">₺{product.price}</span>
+                                    <span
+                                        className={cn("font-bold", priceSize)}
+                                        style={{ color: settings.productPriceColor }}
+                                    >
+                                        ₺{product.discountPrice}
+                                    </span>
+                                </div>
+                            ) : (
                                 <span
                                     className={cn("font-bold", priceSize)}
                                     style={{ color: settings.productPriceColor }}
                                 >
-                                    ₺{product.discountPrice}
+                                    ₺{product.price}
                                 </span>
-                            </div>
-                        ) : (
-                            <span
-                                className={cn("font-bold", priceSize)}
-                                style={{ color: settings.productPriceColor }}
-                            >
-                                ₺{product.price}
-                            </span>
+                            )
                         )}
                     </div>
                 )}
@@ -197,23 +201,25 @@ export default function ProductCard({ product, language, onClick, layoutMode = '
                         {displayName.toLocaleUpperCase('tr-TR')}
                     </h3>
                     <div className="flex flex-col items-end">
-                        {product.discountPrice ? (
-                            <>
-                                <span className="text-xs text-gray-400 line-through">₺{product.price}</span>
+                        {(product.price !== undefined && product.price !== null && (!product.variants || product.variants.length === 0)) && (
+                            product.discountPrice ? (
+                                <>
+                                    <span className="text-xs text-gray-400 line-through">₺{product.price}</span>
+                                    <span
+                                        className={cn("font-bold", priceSize)}
+                                        style={{ color: settings.productPriceColor }}
+                                    >
+                                        ₺{product.discountPrice}
+                                    </span>
+                                </>
+                            ) : (
                                 <span
                                     className={cn("font-bold", priceSize)}
                                     style={{ color: settings.productPriceColor }}
                                 >
-                                    ₺{product.discountPrice}
+                                    ₺{product.price}
                                 </span>
-                            </>
-                        ) : (
-                            <span
-                                className={cn("font-bold", priceSize)}
-                                style={{ color: settings.productPriceColor }}
-                            >
-                                ₺{product.price}
-                            </span>
+                            )
                         )}
                     </div>
                 </div>

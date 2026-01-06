@@ -226,7 +226,8 @@ export async function createProduct(product: Partial<Product>) {
         tags: product.tags,
         allergens: product.allergens,
         variants: product.variants,
-        is_active: product.isActive
+        is_active: product.isActive,
+        sort_order: product.sortOrder || 0
     };
 
     const { data, error } = await supabase.from('products').insert([dbData]).select().single();
@@ -250,6 +251,7 @@ export async function updateProduct(id: string, updates: Partial<Product>) {
     if (updates.allergens !== undefined) dbUpdates.allergens = updates.allergens;
     if (updates.variants !== undefined) dbUpdates.variants = updates.variants;
     if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
+    if (updates.sortOrder !== undefined) dbUpdates.sort_order = updates.sortOrder;
 
     const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);
     if (error) throw error;

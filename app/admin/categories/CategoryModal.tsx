@@ -255,7 +255,7 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                             {/* Icon Preview */}
                             <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 flex items-center justify-center">
                                 {formData.icon ? (
-                                    formData.icon.startsWith('http') ? (
+                                    (formData.icon.startsWith('http') || formData.icon.startsWith('/')) ? (
                                         <img src={formData.icon} alt="Icon" className="h-16 w-16 object-contain" />
                                     ) : (
                                         <span className="text-4xl">{formData.icon}</span>

@@ -131,7 +131,7 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                                             {/* Category Icon */}
                                             {category.icon && (
                                                 <div className="relative h-12 w-12 shrink-0 drop-shadow-lg transition-transform duration-300 group-hover:scale-110">
-                                                    {category.icon.startsWith('http') ? (
+                                                    {(category.icon.startsWith('http') || category.icon.startsWith('/')) ? (
                                                         <Image
                                                             src={category.icon}
                                                             alt=""
