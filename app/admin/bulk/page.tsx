@@ -234,11 +234,13 @@ export default function BulkOperationsPage() {
         if (!confirm(`Tüm ürünlerin fiyatlarını %${rate} oranında ${rate > 0 ? 'artırmak' : 'azaltmak'} istediğinize emin misiniz?`)) return;
 
         const updatedProducts = products.map(p => {
-            const newPrice = p.price * (1 + rate / 100);
+            const currentPrice = p.price ?? 0;
+            const newPrice = currentPrice * (1 + rate / 100);
             const newDiscount = p.discountPrice ? p.discountPrice * (1 + rate / 100) : undefined;
+
             return {
                 ...p,
-                price: parseFloat(newPrice.toFixed(2)),
+                price: p.price !== undefined && p.price !== null ? parseFloat(newPrice.toFixed(2)) : p.price,
                 discountPrice: newDiscount ? parseFloat(newDiscount.toFixed(2)) : undefined
             };
         });
