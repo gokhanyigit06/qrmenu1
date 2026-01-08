@@ -271,14 +271,53 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                                     </div>
 
                                     <div className="pt-2 border-t border-gray-100">
-                                        <p className="text-[10px] text-gray-400 mb-1">Manuel Giriş (veya URL)</p>
-                                        <input
-                                            type="text"
-                                            value={formData.icon || ''}
-                                            onChange={e => setFormData({ ...formData, icon: e.target.value })}
-                                            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-bold text-gray-900 outline-none focus:border-black placeholder:text-gray-400"
-                                            placeholder="örn: Pizza veya https://..."
-                                        />
+                                        <p className="text-[10px] text-gray-400 mb-1">Manuel Giriş (veya URL / Görsel Yükle)</p>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={formData.icon || ''}
+                                                onChange={e => setFormData({ ...formData, icon: e.target.value })}
+                                                className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-bold text-gray-900 outline-none focus:border-black placeholder:text-gray-400"
+                                                placeholder="örn: Pizza veya https://..."
+                                            />
+                                            <div className="relative">
+                                                <input
+                                                    type="file"
+                                                    id="icon-upload"
+                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                    accept="image/*"
+                                                    disabled={isUploading}
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            setIsUploading(true);
+                                                            try {
+                                                                const url = await uploadImage(file);
+                                                                setFormData(prev => ({ ...prev, icon: url }));
+                                                            } catch (error) {
+                                                                console.error(error);
+                                                                alert('İkon yüklenirken hata oluştu');
+                                                            } finally {
+                                                                setIsUploading(false);
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="h-full px-3 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center border border-gray-200"
+                                                    title="Bilgisayardan İkon Yükle"
+                                                >
+                                                    {isUploading ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                        </svg>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
