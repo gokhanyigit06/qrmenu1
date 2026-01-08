@@ -16,6 +16,8 @@ export interface Category {
   parentId?: string;
   image?: string;
   icon?: string;
+  iconColor?: string;
+  iconSize?: 'small' | 'medium' | 'large';
   description?: string;
   discountRate?: number;
   badge?: string;

@@ -1,8 +1,12 @@
+'use client';
+
 import { useMenu } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { Category } from '@/lib/data';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Ban } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import IconComponent, { AVAILABLE_ICONS } from '@/components/IconComponent';
 
 interface CategoryModalProps {
     isOpen: boolean;
@@ -14,6 +18,8 @@ interface CategoryModalProps {
 export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryModalProps) {
     const { uploadImage } = useMenu();
     const [isUploading, setIsUploading] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const [iconSearch, setIconSearch] = useState('');
 
     const [formData, setFormData] = useState<Partial<Category>>({
         name: '',
@@ -21,8 +27,15 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
         image: '',
         description: '',
         badge: '',
-        discountRate: undefined
+        discountRate: undefined,
+        icon: '',
+        iconColor: '#ffffff',
+        iconSize: 'medium'
     });
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         if (category) {
@@ -34,12 +47,30 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                 image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5',
                 description: '',
                 badge: '',
-                discountRate: undefined
+                discountRate: undefined,
+                icon: '',
+                iconColor: '#ffffff',
+                iconSize: 'medium'
             });
         }
     }, [category, isOpen]);
 
-    if (!isOpen) return null;
+    // Aggressive scroll locking
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.setProperty('overflow', 'hidden', 'important');
+            document.documentElement.style.setProperty('overflow', 'hidden', 'important');
+        } else {
+            document.body.style.removeProperty('overflow');
+            document.documentElement.style.removeProperty('overflow');
+        }
+        return () => {
+            document.body.style.removeProperty('overflow');
+            document.documentElement.style.removeProperty('overflow');
+        };
+    }, [isOpen]);
+
+    if (!isOpen || !mounted) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,189 +78,234 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
         onClose();
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-                <div className="mb-6 flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-gray-900">
-                        {category ? 'Kategoriyi Düzenle' : 'Yeni Kategori'}
-                    </h2>
-                    <button
-                        onClick={onClose}
-                        className="rounded-full p-2 hover:bg-gray-100"
-                    >
-                        <span className="sr-only">Kapat</span>
-                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="flex min-h-full items-center justify-center p-4">
+                {/* Modal Container */}
+                <div className="relative w-full max-w-3xl flex flex-col rounded-xl bg-white shadow-2xl my-4">
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Kategori Adı</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.name}
-                            onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
-                        />
-                    </div>
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700 flex items-center gap-1">
-                            <span>🇬🇧</span> Kategori Adı (İngilizce)
-                        </label>
-                        <input
-                            type="text"
-                            value={formData.nameEn || ''}
-                            onChange={e => setFormData({ ...formData, nameEn: e.target.value })}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black bg-gray-50"
-                            placeholder="Opsiyonel"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Açıklama / Slogan</label>
-                        <input
-                            type="text"
-                            value={formData.description || ''}
-                            onChange={e => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
-                            placeholder="Örn: Odun ateşinde pişen lezzetler"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Görünüm Modu</label>
-                        <select
-                            value={formData.layoutMode || 'grid'}
-                            onChange={e => setFormData({ ...formData, layoutMode: e.target.value as any })}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
+                    {/* Header - Fixed */}
+                    <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 shrink-0">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+                                {category ? 'Kategoriyi Düzenle' : 'Yeni Kategori Oluştur'}
+                            </h2>
+                            <p className="text-xs text-gray-500 font-medium">Menü kategorilerinizi buradan yönetebilirsiniz.</p>
+                        </div>
+                        <button
+                            onClick={onClose}
+                            className="rounded-full p-2 bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors"
                         >
-                            <option value="grid">Standart (Görsel + Kart)</option>
-                            <option value="list">Liste (Görselsiz + Varyasyonlu)</option>
-                            <option value="list-no-image">Minimal (Görselsiz + Sade)</option>
-                        </select>
-                        <p className="mt-1 text-xs text-gray-500">
-                            {formData.layoutMode === 'list'
-                                ? 'Şarap/İçecek menüsü için uygundur. Ürün adı ve varyasyonlar alt alta listelenir.'
-                                : formData.layoutMode === 'list-no-image'
-                                    ? 'Kokteyl menüsü için uygundur. Sadece isim ve fiyat görünür.'
-                                    : 'Standart yemek menüsü görünümü.'}
-                        </p>
+                            <span className="sr-only">Kapat</span>
+                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700">İndirim Oranı (%)</label>
-                            <input
-                                type="number"
-                                min="0"
-                                max="100"
-                                value={formData.discountRate || ''}
-                                onChange={e => setFormData({ ...formData, discountRate: e.target.value ? parseInt(e.target.value) : undefined })}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
-                                placeholder="Örn: 20"
-                            />
-                        </div>
-                        <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700">Rozet (Badge)</label>
-                            <input
-                                type="text"
-                                value={formData.badge || ''}
-                                onChange={e => setFormData({ ...formData, badge: e.target.value })}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black"
-                                placeholder="Örn: Yeni"
-                            />
-                        </div>
-                    </div>
+                    {/* Content Area */}
+                    <div className="p-5">
+                        <form id="category-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-5">
 
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Arkaplan Görseli</label>
-                        <div className="space-y-3">
-                            <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={formData.image || ''}
-                                    onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-sm"
-                                    placeholder="Görsel URL..."
-                                />
-                            </div>
+                            {/* LEFT COLUMN: Basic Info (Span 7) */}
+                            <div className="md:col-span-7 space-y-4">
+                                <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 space-y-4">
+                                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                        <span className="w-1 h-4 bg-black rounded-full"></span>
+                                        Temel Bilgiler
+                                    </h3>
 
-                            {/* File Input */}
-                            <div className="flex items-center justify-center w-full flex-col">
-                                <label className={cn(
-                                    "flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors",
-                                    isUploading && "opacity-50 cursor-not-allowed"
-                                )}>
-                                    <div className="flex flex-col items-center justify-center pt-2 pb-3">
-                                        <p className="mb-1 text-xs text-gray-500"><span className="font-semibold">Yüklemek için tıkla</span></p>
-                                        <p className="text-[10px] text-gray-400">PNG, JPG or WEBP</p>
+                                    <div className="grid gap-4">
+                                        <div>
+                                            <label className="mb-1 block text-xs font-bold text-gray-900">Kategori Adı</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={formData.name}
+                                                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-black focus:ring-1 focus:ring-black placeholder:text-gray-400 transition-all shadow-sm"
+                                                placeholder="Örn: Başlangıçlar"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="mb-1 block text-xs font-bold text-gray-900 flex items-center gap-1">
+                                                    <span>🇬🇧</span> İngilizce Adı
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.nameEn || ''}
+                                                    onChange={e => setFormData({ ...formData, nameEn: e.target.value })}
+                                                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-black focus:ring-1 focus:ring-black placeholder:text-gray-400 transition-all shadow-sm"
+                                                    placeholder="Örn: Starters"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="mb-1 block text-xs font-bold text-gray-900">Rozet (Badge)</label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.badge || ''}
+                                                    onChange={e => setFormData({ ...formData, badge: e.target.value })}
+                                                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-black focus:ring-1 focus:ring-black placeholder:text-gray-400 transition-all shadow-sm"
+                                                    placeholder="Örn: Yeni"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="mb-1 block text-xs font-bold text-gray-900">Açıklama / Slogan</label>
+                                            <input
+                                                type="text"
+                                                value={formData.description || ''}
+                                                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-black focus:ring-1 focus:ring-black placeholder:text-gray-400 transition-all shadow-sm"
+                                                placeholder="Örn: Odun ateşinde pişen özel lezzetler"
+                                            />
+                                        </div>
                                     </div>
-                                    <input
-                                        type="file"
-                                        className="hidden"
-                                        accept="image/*"
-                                        disabled={isUploading}
-                                        onChange={async (e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                setIsUploading(true);
-                                                try {
-                                                    const url = await uploadImage(file);
-                                                    setFormData(prev => ({ ...prev, image: url }));
-                                                } catch (error) {
-                                                    console.error("Upload failed", error);
-                                                    alert("Resim yüklenirken hata oluştu.");
-                                                } finally {
-                                                    setIsUploading(false);
-                                                }
-                                            }
-                                        }}
-                                    />
-                                </label>
-                                {isUploading && (
-                                    <div className="text-xs text-center text-blue-600 mt-2 flex items-center justify-center gap-1">
-                                        <Loader2 className="h-3 w-3 animate-spin" /> Yükleniyor...
-                                    </div>
-                                )}
-                            </div>
-
-                            {formData.image && (
-                                <div className="mt-2 relative h-32 w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
-                                    <img src={formData.image} alt="Preview" className="h-full w-full object-cover" />
                                 </div>
-                            )}
-                        </div>
-                    </div>
 
-                    {/* Icon Field */}
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">Kategori İkonu / Sticker</label>
-                        <div className="flex gap-4 items-start">
-                            <div className="flex-1 space-y-3">
-                                <div className="flex gap-2">
+                                <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 space-y-4">
+                                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                        <span className="w-1 h-4 bg-black rounded-full"></span>
+                                        Görünüm Ayarları
+                                    </h3>
+
+                                    <div className="grid gap-4">
+                                        <div>
+                                            <label className="mb-1 block text-xs font-bold text-gray-900">Liste Modu</label>
+                                            <select
+                                                value={formData.layoutMode || 'grid'}
+                                                onChange={e => setFormData({ ...formData, layoutMode: e.target.value as any })}
+                                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-black focus:ring-1 focus:ring-black shadow-sm"
+                                            >
+                                                <option value="grid">Standart Grid (Görsel + Kart)</option>
+                                                <option value="list">Liste (Görselsiz + Varyasyon)</option>
+                                                <option value="list-no-image">Minimal Liste (Sadece İsim)</option>
+                                            </select>
+                                            <p className="mt-1 text-[10px] text-gray-500 font-medium">Kategorideki ürünlerin nasıl listeleneceğini belirler.</p>
+                                        </div>
+
+                                        <div>
+                                            <label className="mb-1 block text-xs font-bold text-gray-900">İndirim Oranı (%)</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                                value={formData.discountRate || ''}
+                                                onChange={e => setFormData({ ...formData, discountRate: e.target.value ? parseInt(e.target.value) : undefined })}
+                                                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-black focus:ring-1 focus:ring-black shadow-sm"
+                                                placeholder="Tüm ürünlerde geçerli indirim"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* RIGHT COLUMN: Visuals (Span 5) */}
+                            <div className="md:col-span-5 space-y-4">
+
+                                {/* Icon Selection Block */}
+                                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <label className="block text-sm font-bold text-gray-900">Kategori İkonu</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="color"
+                                                value={formData.iconColor || '#ffffff'}
+                                                onChange={e => setFormData({ ...formData, iconColor: e.target.value })}
+                                                className="h-8 w-8 cursor-pointer rounded-lg border border-gray-200 p-1"
+                                                title="İkon Rengi"
+                                            />
+                                            <select
+                                                value={formData.iconSize || 'medium'}
+                                                onChange={e => setFormData({ ...formData, iconSize: e.target.value as any })}
+                                                className="h-8 rounded-lg border border-gray-200 text-xs font-bold text-gray-900 px-2 outline-none focus:border-black"
+                                            >
+                                                <option value="small">Küçük</option>
+                                                <option value="medium">Orta</option>
+                                                <option value="large">Büyük</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* Icon Search */}
                                     <input
                                         type="text"
-                                        value={formData.icon || ''}
-                                        onChange={e => setFormData({ ...formData, icon: e.target.value })}
-                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-black focus:ring-1 focus:ring-black text-sm"
-                                        placeholder="İkon URL veya Emoji..."
+                                        value={iconSearch}
+                                        onChange={(e) => setIconSearch(e.target.value)}
+                                        className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-900 outline-none focus:border-black placeholder:text-gray-400"
+                                        placeholder="İkon ara..."
                                     />
+
+                                    <div className="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto p-1 custom-scrollbar">
+                                        {/* No Icon Option */}
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, icon: '' })}
+                                            className={cn(
+                                                "aspect-square flex items-center justify-center rounded-xl transition-all duration-200",
+                                                !formData.icon
+                                                    ? "bg-red-50 text-red-600 ring-2 ring-offset-2 ring-red-500 shadow-sm"
+                                                    : "bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                                            )}
+                                            title="İkon Yok / Kaldır"
+                                        >
+                                            <Ban className="h-5 w-5" />
+                                        </button>
+
+                                        {AVAILABLE_ICONS.filter(i => i.toLowerCase().includes(iconSearch.toLowerCase())).map((iconName) => (
+                                            <button
+                                                key={iconName}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, icon: iconName })}
+                                                className={cn(
+                                                    "aspect-square flex items-center justify-center rounded-xl transition-all duration-200",
+                                                    formData.icon === iconName
+                                                        ? "bg-black text-white shadow-md scale-105 ring-2 ring-offset-2 ring-black"
+                                                        : "bg-gray-50 text-gray-900 hover:bg-gray-100"
+                                                )}
+                                            >
+                                                <IconComponent name={iconName} className="h-5 w-5" />
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="pt-2 border-t border-gray-100">
+                                        <p className="text-[10px] text-gray-400 mb-1">Manuel Giriş (veya URL)</p>
+                                        <input
+                                            type="text"
+                                            value={formData.icon || ''}
+                                            onChange={e => setFormData({ ...formData, icon: e.target.value })}
+                                            className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-bold text-gray-900 outline-none focus:border-black placeholder:text-gray-400"
+                                            placeholder="örn: Pizza veya https://..."
+                                        />
+                                    </div>
                                 </div>
 
-                                {/* Icon File Input */}
-                                <div className="flex items-center justify-center w-full flex-col">
-                                    <label className={cn(
-                                        "flex flex-col items-center justify-center w-full h-16 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors",
-                                        isUploading && "opacity-50 cursor-not-allowed"
-                                    )}>
-                                        <div className="flex flex-col items-center justify-center pt-2 pb-2">
-                                            <p className="text-[10px] text-gray-400">İkon Yükle (PNG/WEBP)</p>
-                                        </div>
+                                {/* Background Image Block */}
+                                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                                    <label className="block text-sm font-bold text-gray-900">Arkaplan Fotoğrafı</label>
+
+                                    <div className="relative group overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:bg-gray-100 aspect-video flex flex-col items-center justify-center text-center p-4">
+                                        {formData.image ? (
+                                            <>
+                                                <img src={formData.image} alt="Preview" className="absolute inset-0 h-full w-full object-cover" />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <p className="text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">Değiştirmek için tıkla</p>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="pointer-events-none">
+                                                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                                                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                </div>
+                                                <p className="text-xs font-medium text-gray-500">Görsel Yükle</p>
+                                            </div>
+                                        )}
+
                                         <input
                                             type="file"
-                                            className="hidden"
+                                            className="absolute inset-0 cursor-pointer opacity-0"
                                             accept="image/*"
                                             disabled={isUploading}
                                             onChange={async (e) => {
@@ -238,52 +314,53 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                                                     setIsUploading(true);
                                                     try {
                                                         const url = await uploadImage(file);
-                                                        setFormData(prev => ({ ...prev, icon: url }));
+                                                        setFormData(prev => ({ ...prev, image: url }));
                                                     } catch (error) {
-                                                        console.error("Upload failed", error);
-                                                        alert("Resim yüklenirken hata oluştu.");
+                                                        console.error(error);
                                                     } finally {
                                                         setIsUploading(false);
                                                     }
                                                 }
                                             }}
                                         />
-                                    </label>
+                                        {isUploading && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+                                                <Loader2 className="h-6 w-6 animate-spin text-black" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={formData.image || ''}
+                                        onChange={e => setFormData({ ...formData, image: e.target.value })}
+                                        className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs outline-none focus:border-black placeholder:text-gray-400"
+                                        placeholder="veya Görsel URL'si yapıştır..."
+                                    />
                                 </div>
                             </div>
-
-                            {/* Icon Preview */}
-                            <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 flex items-center justify-center">
-                                {formData.icon ? (
-                                    (formData.icon.startsWith('http') || formData.icon.startsWith('/')) ? (
-                                        <img src={formData.icon} alt="Icon" className="h-16 w-16 object-contain" />
-                                    ) : (
-                                        <span className="text-4xl">{formData.icon}</span>
-                                    )
-                                ) : (
-                                    <span className="text-xs text-gray-400 text-center px-2">Önizleme</span>
-                                )}
-                            </div>
-                        </div>
+                        </form>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    {/* Footer - Fixed */}
+                    <div className="flex items-center justify-end gap-3 px-5 py-3 border-t border-gray-100 bg-gray-50/50 rounded-b-xl shrink-0">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                            className="rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm"
                         >
-                            İptal
+                            Vazgeç
                         </button>
                         <button
                             type="submit"
-                            className="rounded-lg bg-black px-6 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                            form="category-form"
+                            className="rounded-xl bg-black px-8 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-gray-900 hover:shadow-black/20 transition-all transform hover:-translate-y-0.5"
                         >
-                            {category ? 'Güncelle' : 'Kaydet'}
+                            {category ? 'Değişiklikleri Kaydet' : 'Kategori Oluştur'}
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
