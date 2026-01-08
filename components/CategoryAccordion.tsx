@@ -144,6 +144,7 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                                         src={category.image || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5'}
                                         alt={displayName}
                                         fill
+                                        unoptimized
                                         className={cn(
                                             "object-cover transition-transform duration-700",
                                             isOpen ? "scale-110 blur-[2px]" : "scale-100"
