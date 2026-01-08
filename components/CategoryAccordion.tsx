@@ -21,16 +21,40 @@ export default function CategoryAccordion({ categories, products, language }: Ca
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Track open state for the active category (only one can be open at a time).
-    const [activeCategoryId, setActiveCategoryId] = useState<string | null>(() => {
+    // Track open state for active categories (multiple can be open at a time).
+    const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>(() => {
         if (categories.length > 0) {
-            return categories[0].id;
+            return [categories[0].id];
         }
-        return null;
+        return [];
     });
 
     const toggleCategory = (id: string) => {
-        setActiveCategoryId(prev => (prev === id ? null : id));
+        const isOpening = !activeCategoryIds.includes(id);
+
+        setActiveCategoryIds(prev => {
+            if (prev.includes(id)) {
+                return prev.filter(c => c !== id);
+            } else {
+                return [...prev, id];
+            }
+        });
+
+        if (isOpening) {
+            setTimeout(() => {
+                const element = document.getElementById(`category-${id}`);
+                if (element) {
+                    const headerOffset = 150; // Space for sticky header
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 300);
+        }
     };
 
     const handleProductClick = (product: Product) => {
@@ -87,14 +111,18 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                 {categories.map((category) => {
                     // ... (rest of mapping logic) ...
                     const categoryProducts = products.filter(p => p.categoryId === category.id);
-                    const isOpen = activeCategoryId === category.id;
+                    const isOpen = activeCategoryIds.includes(category.id);
                     const displayName = language === 'en' && category.nameEn ? category.nameEn : category.name;
 
                     // Filter out categories with no products
                     if (categoryProducts.length === 0) return null;
 
                     return (
-                        <div key={category.id} className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300">
+                        <div
+                            key={category.id}
+                            id={`category-${category.id}`}
+                            className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300"
+                        >
                             {/* ... header button ... */}
                             <button
                                 onClick={() => toggleCategory(category.id)}
@@ -188,7 +216,7 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                             {/* Accordion Body / Products Grid */}
                             <div
                                 className={cn(
-                                    "grid transition-all duration-500 ease-in-out",
+                                    "grid transition-all duration-300 ease-in-out",
                                     isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                                 )}
                             >
