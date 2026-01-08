@@ -1,40 +1,12 @@
 'use client';
 
-import {
-    UtensilsCrossed, Coffee, Pizza, Beer, Wine, Cake,
-    Sandwich, Salad, Soup, IceCream, Martini, Fish,
-    Drumstick, Croissant, Carrot, Bean, Grape, Nut,
-    Apple, Cherry, Citrus, Banana, Beef, Milk
-} from 'lucide-react';
-import React from 'react';
+import * as LucideIcons from 'lucide-react';
+import React, { useMemo } from 'react';
 
-// Map of available icons
-const ICON_MAP = {
-    'UtensilsCrossed': UtensilsCrossed,
-    'Coffee': Coffee,
-    'Pizza': Pizza,
-    'Beer': Beer,
-    'Wine': Wine,
-    'Cake': Cake,
-    'Sandwich': Sandwich,
-    'Salad': Salad,
-    'Soup': Soup,
-    'IceCream': IceCream,
-    'Martini': Martini,
-    'Fish': Fish,
-    'Drumstick': Drumstick,
-    'Croissant': Croissant,
-    'Carrot': Carrot,
-    'Bean': Bean,
-    'Grape': Grape,
-    'Nut': Nut,
-    'Apple': Apple,
-    'Cherry': Cherry,
-    'Citrus': Citrus,
-    'Banana': Banana,
-    'Beef': Beef,
-    'Milk': Milk
-};
+// Filter out non-icon exports if necessary
+// Usually Lucide icons are React components.
+// We can try to include all exports that look like components.
+const iconList = Object.keys(LucideIcons).filter(key => key !== 'createLucideIcon' && key !== 'default');
 
 interface IconComponentProps {
     name: string;
@@ -47,20 +19,19 @@ export default function IconComponent({ name, className, style }: IconComponentP
 
     // Normalize name: case-insensitive match
     const normalizedName = name.trim().toLowerCase();
-    const match = Object.keys(ICON_MAP).find(k => k.toLowerCase() === normalizedName);
 
-    if (match) {
-        const LucideIcon = ICON_MAP[match as keyof typeof ICON_MAP];
-        return <LucideIcon className={className} style={style} />;
-    }
+    // Find the actual export name (case-insensitive)
+    const iconName = iconList.find(k => k.toLowerCase() === normalizedName);
 
-    // Direct match try (fallback)
-    const ExactIcon = ICON_MAP[name as keyof typeof ICON_MAP];
-    if (ExactIcon) {
-        return <ExactIcon className={className} style={style} />;
+    if (iconName) {
+        // @ts-ignore
+        const LucideIcon = LucideIcons[iconName];
+        if (LucideIcon) {
+            return <LucideIcon className={className} style={style} />;
+        }
     }
 
     return null;
 }
 
-export const AVAILABLE_ICONS = Object.keys(ICON_MAP);
+export const AVAILABLE_ICONS = iconList;

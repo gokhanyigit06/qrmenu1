@@ -253,21 +253,25 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                                             <Ban className="h-5 w-5" />
                                         </button>
 
-                                        {AVAILABLE_ICONS.filter(i => i.toLowerCase().includes(iconSearch.toLowerCase())).map((iconName) => (
-                                            <button
-                                                key={iconName}
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, icon: iconName })}
-                                                className={cn(
-                                                    "aspect-square flex items-center justify-center rounded-xl transition-all duration-200",
-                                                    formData.icon === iconName
-                                                        ? "bg-black text-white shadow-md scale-105 ring-2 ring-offset-2 ring-black"
-                                                        : "bg-gray-50 text-gray-900 hover:bg-gray-100"
-                                                )}
-                                            >
-                                                <IconComponent name={iconName} className="h-5 w-5" />
-                                            </button>
-                                        ))}
+                                        {AVAILABLE_ICONS
+                                            .filter(i => i.toLowerCase().includes(iconSearch.toLowerCase()))
+                                            .slice(0, 60) // Limit to 60 icons for performance
+                                            .map((iconName) => (
+                                                <button
+                                                    key={iconName}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, icon: iconName })}
+                                                    className={cn(
+                                                        "aspect-square flex items-center justify-center rounded-xl transition-all duration-200",
+                                                        formData.icon === iconName
+                                                            ? "bg-black text-white shadow-md scale-105 ring-2 ring-offset-2 ring-black"
+                                                            : "bg-gray-50 text-gray-900 hover:bg-gray-100"
+                                                    )}
+                                                    title={iconName}
+                                                >
+                                                    <IconComponent name={iconName} className="h-5 w-5" />
+                                                </button>
+                                            ))}
                                     </div>
 
                                     <div className="pt-2 border-t border-gray-100">
