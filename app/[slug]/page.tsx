@@ -180,9 +180,10 @@ export default function Home() {
       {/* Floating Action / Cart Button */}
 
       {/* Back to Top Button */}
+      {/* Back to Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-6 right-6 z-50 rounded-full bg-black/80 p-3 text-white shadow-lg backdrop-blur transition-all duration-300 hover:bg-black ${showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
+        className={`fixed bottom-6 right-6 z-[999] rounded-full bg-black/80 p-3 text-white shadow-xl backdrop-blur-md transition-all duration-300 hover:bg-black ${showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0 pointer-events-none'
           }`}
         aria-label="Back to Top"
       >
