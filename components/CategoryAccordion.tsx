@@ -9,6 +9,7 @@ import { useState } from 'react';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import { useMenu } from '@/lib/store';
+import { useLenis } from 'lenis/react';
 
 interface CategoryAccordionProps {
     categories: Category[];
@@ -18,6 +19,8 @@ interface CategoryAccordionProps {
 
 export default function CategoryAccordion({ categories, products, language }: CategoryAccordionProps) {
     const { settings } = useMenu();
+    const lenis = useLenis(); // Get lenis instance
+
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,15 +46,21 @@ export default function CategoryAccordion({ categories, products, language }: Ca
         if (isOpening) {
             setTimeout(() => {
                 const element = document.getElementById(`category-${id}`);
-                if (element) {
-                    const headerOffset = 150; // Space for sticky header
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.scrollY - headerOffset;
+                if (element && lenis) {
+                    const headerOffset = 150;
+                    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                    const offsetPosition = elementPosition - headerOffset;
 
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
+                    lenis.scrollTo(offsetPosition, {
+                        duration: 1.2,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // Exponential out easing
                     });
+                } else if (element) {
+                    // Fallback if lenis isn't ready
+                    const headerOffset = 150;
+                    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                    const offsetPosition = elementPosition - headerOffset;
+                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
                 }
             }, 300);
         }
