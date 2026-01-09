@@ -511,7 +511,7 @@ export default function SettingsPage() {
                                     type="text"
                                     value={localSettings.logoUrl || ''}
                                     onChange={(e) => handleChange('logoUrl', e.target.value)}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                     placeholder="https://..."
                                 />
                             </div>
@@ -521,7 +521,7 @@ export default function SettingsPage() {
                                     type="number"
                                     value={localSettings.logoWidth || 150}
                                     onChange={(e) => handleChange('logoWidth', parseInt(e.target.value) || 150)}
-                                    className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                    className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                     placeholder="150"
                                 />
                             </div>
@@ -575,7 +575,8 @@ export default function SettingsPage() {
                                         type="text"
                                         value={localSettings.defaultProductImage || ''}
                                         onChange={(e) => handleChange('defaultProductImage', e.target.value)}
-                                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                        onChange={(e) => handleChange('defaultProductImage', e.target.value)}
+                                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                         placeholder="https://..."
                                     />
                                     <label className="cursor-pointer rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors">
@@ -654,7 +655,8 @@ export default function SettingsPage() {
                                                 type="text"
                                                 value={url || ''}
                                                 onChange={(e) => handleBannerUrlChange(index, e.target.value)}
-                                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                                onChange={(e) => handleBannerUrlChange(index, e.target.value)}
+                                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                                 placeholder="Masaüstü görsel URL..."
                                             />
                                             <label className="cursor-pointer rounded-lg bg-white border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
@@ -677,7 +679,8 @@ export default function SettingsPage() {
                                                 type="text"
                                                 value={localSettings.mobileBannerUrls?.[index] || ''}
                                                 onChange={(e) => handleMobileBannerUrlChange(index, e.target.value)}
-                                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                                onChange={(e) => handleMobileBannerUrlChange(index, e.target.value)}
+                                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                                 placeholder="Mobil görsel URL (isteğe bağlı)..."
                                             />
                                             <label className="cursor-pointer rounded-lg bg-white border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
@@ -730,7 +733,9 @@ export default function SettingsPage() {
                                             type="text"
                                             value={localSettings.bannerTag || ''}
                                             onChange={(e) => handleChange('bannerTag', e.target.value)}
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                            value={localSettings.bannerTag || ''}
+                                            onChange={(e) => handleChange('bannerTag', e.target.value)}
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                             placeholder="FIRSAT"
                                         />
                                     </div>
@@ -740,7 +745,7 @@ export default function SettingsPage() {
                                             type="text"
                                             value={localSettings.bannerTitle || ''}
                                             onChange={(e) => handleChange('bannerTitle', e.target.value)}
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                             placeholder="Kampanya"
                                         />
                                     </div>
@@ -750,7 +755,7 @@ export default function SettingsPage() {
                                             type="text"
                                             value={localSettings.bannerSubtitle || ''}
                                             onChange={(e) => handleChange('bannerSubtitle', e.target.value)}
-                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                             placeholder="%20 İndirim"
                                         />
                                     </div>
@@ -798,14 +803,102 @@ export default function SettingsPage() {
                                     type="text"
                                     value={localSettings.popupUrl || ''}
                                     onChange={(e) => handleChange('popupUrl', e.target.value)}
-                                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                     placeholder="https://..."
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
+                {/* Footer Settings */}
+                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
+                    <div className="mb-6">
+                        <h3 className="text-lg font-bold text-gray-900">Footer (Alt Alan) Ayarları</h3>
+                        <p className="text-sm text-gray-500">Sayfanın en alt kısmında görünecek sosyal medya ve metin bilgileri.</p>
+                    </div>
 
+                    <div className="grid gap-6 md:grid-cols-2">
+                        {/* Social Media Links */}
+                        <div className="space-y-4">
+                            <h4 className="font-bold text-gray-900 text-sm border-b pb-2">Sosyal Medya Linkleri</h4>
+
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Instagram</label>
+                                <div className="flex rounded-lg shadow-sm">
+                                    <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">@</span>
+                                    <input
+                                        type="text"
+                                        value={localSettings.socialInstagram || ''}
+                                        onChange={(e) => handleChange('socialInstagram', e.target.value)}
+                                        className="block w-full min-w-0 flex-1 rounded-r-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
+                                        placeholder="kullaniciadi (veya tam link)"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Facebook</label>
+                                <input
+                                    type="text"
+                                    value={localSettings.socialFacebook || ''}
+                                    onChange={(e) => handleChange('socialFacebook', e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
+                                    placeholder="https://facebook.com/sayfaniz"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Twitter (X)</label>
+                                <input
+                                    type="text"
+                                    value={localSettings.socialTwitter || ''}
+                                    onChange={(e) => handleChange('socialTwitter', e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
+                                    placeholder="https://twitter.com/kullanici"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Whatsapp</label>
+                                <input
+                                    type="text"
+                                    value={localSettings.socialWhatsapp || ''}
+                                    onChange={(e) => handleChange('socialWhatsapp', e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
+                                    placeholder="+90 5xx xxx xx xx (Link için)"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Footer Texts */}
+                        <div className="space-y-4">
+                            <h4 className="font-bold text-gray-900 text-sm border-b pb-2">Metin Alanları</h4>
+
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Alt Bilgi / İmza (Made By)</label>
+                                <input
+                                    type="text"
+                                    value={localSettings.footerText || ''}
+                                    onChange={(e) => handleChange('footerText', e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
+                                    placeholder="Powered by AntiGravity"
+                                />
+                                <p className="mt-1 text-xs text-gray-500">En altta görünecek 'Tarafından yapılmıştır' yazısı.</p>
+                            </div>
+
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-700">Telif Hakkı (Copyright)</label>
+                                <input
+                                    type="text"
+                                    value={localSettings.footerCopyright || `© ${new Date().getFullYear()} ${localSettings.siteName || 'İşletme Adı'}`}
+                                    onChange={(e) => handleChange('footerCopyright', e.target.value)}
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
+                                    placeholder="© 2024 Tüm Hakları Saklıdır"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {/* Domain Settings */}
                 <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-6 shadow-sm lg:col-span-2">
                     <div className="mb-6">
@@ -824,7 +917,7 @@ export default function SettingsPage() {
                                     type="text"
                                     value={domain}
                                     onChange={(e) => setDomain(e.target.value)}
-                                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                     placeholder="menu.siteniz.com"
                                 />
                                 <button
@@ -857,7 +950,7 @@ export default function SettingsPage() {
                                 type="password"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"
                                 placeholder="******"
                             />
                         </div>
@@ -867,7 +960,7 @@ export default function SettingsPage() {
                                 type="password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"
                                 placeholder="******"
                             />
                         </div>

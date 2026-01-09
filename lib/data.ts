@@ -85,6 +85,14 @@ export interface SiteSettings {
   productTitleSize?: 'medium' | 'large' | 'xl';
   productDescriptionSize?: 'small' | 'medium' | 'large';
   productPriceSize?: 'medium' | 'large' | 'xl';
+
+  // Footer & Social
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialTwitter?: string;
+  socialWhatsapp?: string;
+  footerText?: string;
+  footerCopyright?: string;
 }
 
 export const defaultSettings: SiteSettings = {

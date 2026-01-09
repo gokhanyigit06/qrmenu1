@@ -118,150 +118,163 @@ export default function CategoryAccordion({ categories, products, language }: Ca
             />
 
             <div className={currentGap}>
-                {categories.map((category) => {
-                    // ... (rest of mapping logic) ...
-                    const categoryProducts = products.filter(p => p.categoryId === category.id);
-                    const isOpen = activeCategoryIds.includes(category.id);
-                    const displayName = language === 'en' && category.nameEn ? category.nameEn : category.name;
+                {[...categories]
+                    .sort((a, b) => (a.order || 0) - (b.order || 0))
+                    .map((category) => {
+                        // ... (rest of mapping logic) ...
+                        // Check if this is a "Campaigns" smart category
+                        const isCampaignCategory = ['kampanyalar', 'campaigns', 'fırsatlar', 'deals'].includes(category.name.toLowerCase());
 
-                    // Filter out categories with no products
-                    if (categoryProducts.length === 0) return null;
+                        let categoryProducts: Product[] = [];
 
-                    return (
-                        <div
-                            key={category.id}
-                            id={`category-${category.id}`}
-                            className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300"
-                        >
-                            {/* ... header button ... */}
-                            <button
-                                onClick={() => toggleCategory(category.id)}
-                                className={`relative flex ${currentHeight} w-full items-center overflow-hidden text-left`}
+                        if (isCampaignCategory) {
+                            // Smart Category Logic: Include products with ANY badge
+                            categoryProducts = products.filter(p => p.badge && p.badge.trim().length > 0);
+                        } else {
+                            // Standard Logic: Products belonging to this category ID
+                            categoryProducts = products.filter(p => p.categoryId === category.id);
+                        }
+                        const isOpen = activeCategoryIds.includes(category.id);
+                        const displayName = language === 'en' && category.nameEn ? category.nameEn : category.name;
+
+                        // Filter out categories with no products
+                        if (categoryProducts.length === 0) return null;
+
+                        return (
+                            <div
+                                key={category.id}
+                                id={`category-${category.id}`}
+                                className="overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300"
                             >
-                                {/* ... background image ... */}
-                                <div className="absolute inset-0 z-0">
-                                    <Image
-                                        src={category.image || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5'}
-                                        alt={displayName}
-                                        fill
-                                        unoptimized
-                                        className={cn(
-                                            "object-cover transition-transform duration-700",
-                                            isOpen ? "scale-110 blur-[2px]" : "scale-100"
-                                        )}
-                                    />
-                                    {/* Dynamic Gradient Overlay based on state */}
-                                    <div
-                                        className={cn(
-                                            "absolute inset-0 transition-opacity duration-300",
-                                            isOpen ? "bg-black/70" : ""
-                                        )}
-                                        style={{
-                                            backgroundColor: isOpen ? undefined : `rgba(0,0,0, ${settings.categoryOverlayOpacity !== undefined && settings.categoryOverlayOpacity !== null ? settings.categoryOverlayOpacity / 100 : 0.5})`
-                                        }}
-                                    />
-                                </div>
-
-                                {/* ... Content ... */}
-                                {/* (Same header content code) */}
-                                <div className="relative z-10 flex w-full items-center justify-between px-6">
-                                    <div className="flex items-center w-full gap-4">
-                                        {/* Category Icon */}
-                                        {category.icon && (
-                                            <div className="relative h-14 w-14 shrink-0 drop-shadow-lg transition-transform duration-300 group-hover:scale-110 flex items-center justify-center">
-                                                {/* Check if it's an image URL first */
-                                                    (category.icon.startsWith('http') || category.icon.startsWith('/')) ? (
-                                                        <Image
-                                                            src={category.icon}
-                                                            alt=""
-                                                            fill
-                                                            className="object-contain"
-                                                        />
-                                                    ) : (
-                                                        /* Otherwise assume it's a Lucide icon name */
-                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm shadow-sm">
-                                                            <IconComponent
-                                                                name={category.icon}
-                                                                className={cn(
-                                                                    "transition-colors",
-                                                                    category.iconSize === 'small' ? 'h-5 w-5' :
-                                                                        category.iconSize === 'large' ? 'h-9 w-9' : 'h-7 w-7',
-                                                                    !category.iconColor && "text-white"
-                                                                )}
-                                                                style={{ color: category.iconColor }}
-                                                            />
-                                                        </div>
-                                                    )}
-                                            </div>
-                                        )}
-
-                                        <div className="flex flex-col gap-0.5">
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <h3 className={`${currentFontSize} ${currentFontWeight} text-white drop-shadow-md tracking-tight`}>
-                                                    {displayName}
-                                                </h3>
-                                                {category.badge && (
-                                                    <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white shadow-sm">
-                                                        {category.badge.toLocaleUpperCase('tr-TR')}
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            <div className="flex items-center gap-2 text-white/80">
-                                                <p className="text-xs font-bold">
-                                                    {categoryProducts.length} {language === 'en' ? 'Items' : 'Çeşit'}
-                                                </p>
-                                                {category.discountRate && (
-                                                    <>
-                                                        <span className="text-[10px] opacity-50">•</span>
-                                                        <span className="rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-bold text-white">
-                                                            %{category.discountRate} {language === 'en' ? 'Off' : 'İndirim'}
-                                                        </span>
-                                                    </>
-                                                )}
-                                            </div>
-
-                                            {category.description && (
-                                                <p className="text-xs font-medium text-white/70 line-clamp-1 mt-0.5">
-                                                    {category.description}
-                                                </p>
+                                {/* ... header button ... */}
+                                <button
+                                    onClick={() => toggleCategory(category.id)}
+                                    className={`relative flex ${currentHeight} w-full items-center overflow-hidden text-left`}
+                                >
+                                    {/* ... background image ... */}
+                                    <div className="absolute inset-0 z-0">
+                                        <Image
+                                            src={category.image || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5'}
+                                            alt={displayName}
+                                            fill
+                                            unoptimized
+                                            className={cn(
+                                                "object-cover transition-transform duration-700",
+                                                isOpen ? "scale-110 blur-[2px]" : "scale-100"
                                             )}
+                                        />
+                                        {/* Dynamic Gradient Overlay based on state */}
+                                        <div
+                                            className={cn(
+                                                "absolute inset-0 transition-opacity duration-300",
+                                                isOpen ? "bg-black/70" : ""
+                                            )}
+                                            style={{
+                                                backgroundColor: isOpen ? undefined : `rgba(0,0,0, ${settings.categoryOverlayOpacity !== undefined && settings.categoryOverlayOpacity !== null ? settings.categoryOverlayOpacity / 100 : 0.5})`
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* ... Content ... */}
+                                    {/* (Same header content code) */}
+                                    <div className="relative z-10 flex w-full items-center justify-between px-6">
+                                        <div className="flex items-center w-full gap-4">
+                                            {/* Category Icon */}
+                                            {category.icon && (
+                                                <div className="relative h-14 w-14 shrink-0 drop-shadow-lg transition-transform duration-300 group-hover:scale-110 flex items-center justify-center">
+                                                    {/* Check if it's an image URL first */
+                                                        (category.icon.startsWith('http') || category.icon.startsWith('/')) ? (
+                                                            <Image
+                                                                src={category.icon}
+                                                                alt=""
+                                                                fill
+                                                                className="object-contain"
+                                                            />
+                                                        ) : (
+                                                            /* Otherwise assume it's a Lucide icon name */
+                                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm shadow-sm">
+                                                                <IconComponent
+                                                                    name={category.icon}
+                                                                    className={cn(
+                                                                        "transition-colors",
+                                                                        category.iconSize === 'small' ? 'h-5 w-5' :
+                                                                            category.iconSize === 'large' ? 'h-9 w-9' : 'h-7 w-7',
+                                                                        !category.iconColor && "text-white"
+                                                                    )}
+                                                                    style={{ color: category.iconColor }}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                </div>
+                                            )}
+
+                                            <div className="flex flex-col gap-0.5">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <h3 className={`${currentFontSize} ${currentFontWeight} text-white drop-shadow-md tracking-tight`}>
+                                                        {displayName}
+                                                    </h3>
+                                                    {category.badge && (
+                                                        <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold tracking-wider text-white shadow-sm">
+                                                            {category.badge.toLocaleUpperCase('tr-TR')}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex items-center gap-2 text-white/80">
+                                                    <p className="text-xs font-bold">
+                                                        {categoryProducts.length} {language === 'en' ? 'Items' : 'Çeşit'}
+                                                    </p>
+                                                    {category.discountRate && (
+                                                        <>
+                                                            <span className="text-[10px] opacity-50">•</span>
+                                                            <span className="rounded-full bg-red-600/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                                                                %{category.discountRate} {language === 'en' ? 'Off' : 'İndirim'}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
+
+                                                {category.description && (
+                                                    <p className="text-xs font-medium text-white/70 line-clamp-1 mt-0.5">
+                                                        {category.description}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className={cn(
+                                            "flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md transition-transform duration-300 shrink-0",
+                                            isOpen ? "rotate-180 bg-white text-black" : "text-white"
+                                        )}>
+                                            <ChevronDown className="h-6 w-6" />
                                         </div>
                                     </div>
+                                </button>
 
-                                    <div className={cn(
-                                        "flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md transition-transform duration-300 shrink-0",
-                                        isOpen ? "rotate-180 bg-white text-black" : "text-white"
-                                    )}>
-                                        <ChevronDown className="h-6 w-6" />
-                                    </div>
-                                </div>
-                            </button>
-
-                            {/* Accordion Body / Products Grid */}
-                            <div
-                                className={cn(
-                                    "grid transition-all duration-300 ease-in-out",
-                                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                                )}
-                            >
-                                <div className="overflow-hidden">
-                                    <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 bg-white">
-                                        {categoryProducts.map((product) => (
-                                            <ProductCard
-                                                key={product.id}
-                                                product={product}
-                                                language={language}
-                                                layoutMode={category.layoutMode || 'grid'}
-                                                onClick={() => handleProductClick(product)}
-                                            />
-                                        ))}
+                                {/* Accordion Body / Products Grid */}
+                                <div
+                                    className={cn(
+                                        "grid transition-all duration-300 ease-in-out",
+                                        isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                                    )}
+                                >
+                                    <div className="overflow-hidden">
+                                        <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 bg-white">
+                                            {categoryProducts.map((product) => (
+                                                <ProductCard
+                                                    key={product.id}
+                                                    product={product}
+                                                    language={language}
+                                                    layoutMode={category.layoutMode || 'grid'}
+                                                    onClick={() => handleProductClick(product)}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
             </div>
         </>
     );

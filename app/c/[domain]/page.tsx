@@ -4,6 +4,7 @@ import CategoryAccordion from '@/components/CategoryAccordion';
 import HeroBanner from '@/components/HeroBanner';
 import PromoPopup from '@/components/PromoPopup';
 import AllergenModal from '@/components/AllergenModal';
+import Footer from '@/components/Footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMenu } from '@/lib/store';
 import { trackPageView } from '@/lib/services';
@@ -138,6 +139,8 @@ export default function CustomDomainHome() {
                     </>
                 )}
             </main>
+
+            <Footer />
         </div>
     );
 }
