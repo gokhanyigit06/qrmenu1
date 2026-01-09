@@ -575,7 +575,6 @@ export default function SettingsPage() {
                                         type="text"
                                         value={localSettings.defaultProductImage || ''}
                                         onChange={(e) => handleChange('defaultProductImage', e.target.value)}
-                                        onChange={(e) => handleChange('defaultProductImage', e.target.value)}
                                         className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                         placeholder="https://..."
                                     />
@@ -655,7 +654,6 @@ export default function SettingsPage() {
                                                 type="text"
                                                 value={url || ''}
                                                 onChange={(e) => handleBannerUrlChange(index, e.target.value)}
-                                                onChange={(e) => handleBannerUrlChange(index, e.target.value)}
                                                 className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                                 placeholder="Masaüstü görsel URL..."
                                             />
@@ -678,7 +676,6 @@ export default function SettingsPage() {
                                             <input
                                                 type="text"
                                                 value={localSettings.mobileBannerUrls?.[index] || ''}
-                                                onChange={(e) => handleMobileBannerUrlChange(index, e.target.value)}
                                                 onChange={(e) => handleMobileBannerUrlChange(index, e.target.value)}
                                                 className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
                                                 placeholder="Mobil görsel URL (isteğe bağlı)..."
@@ -731,8 +728,6 @@ export default function SettingsPage() {
                                         <label className="mb-1 block text-sm font-medium text-gray-700">Etiket (Örn: FIRSAT)</label>
                                         <input
                                             type="text"
-                                            value={localSettings.bannerTag || ''}
-                                            onChange={(e) => handleChange('bannerTag', e.target.value)}
                                             value={localSettings.bannerTag || ''}
                                             onChange={(e) => handleChange('bannerTag', e.target.value)}
                                             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder:text-gray-400"
