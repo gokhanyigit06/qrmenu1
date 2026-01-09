@@ -169,27 +169,29 @@ export default function CategoryAccordion({ categories, products, language }: Ca
                                         {/* Category Icon */}
                                         {category.icon && (
                                             <div className="relative h-14 w-14 shrink-0 drop-shadow-lg transition-transform duration-300 group-hover:scale-110 flex items-center justify-center">
-                                                {AVAILABLE_ICONS.some(icon => icon.toLowerCase() === category.icon?.toLowerCase()) ? (
-                                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm shadow-sm">
-                                                        <IconComponent
-                                                            name={category.icon}
-                                                            className={cn(
-                                                                "transition-colors",
-                                                                category.iconSize === 'small' ? 'h-5 w-5' :
-                                                                    category.iconSize === 'large' ? 'h-9 w-9' : 'h-7 w-7',
-                                                                !category.iconColor && "text-white"
-                                                            )}
-                                                            style={{ color: category.iconColor }}
+                                                {/* Check if it's an image URL first */
+                                                    (category.icon.startsWith('http') || category.icon.startsWith('/')) ? (
+                                                        <Image
+                                                            src={category.icon}
+                                                            alt=""
+                                                            fill
+                                                            className="object-contain"
                                                         />
-                                                    </div>
-                                                ) : (category.icon.startsWith('http') || category.icon.startsWith('/')) ? (
-                                                    <Image
-                                                        src={category.icon}
-                                                        alt=""
-                                                        fill
-                                                        className="object-contain"
-                                                    />
-                                                ) : null}
+                                                    ) : (
+                                                        /* Otherwise assume it's a Lucide icon name */
+                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm shadow-sm">
+                                                            <IconComponent
+                                                                name={category.icon}
+                                                                className={cn(
+                                                                    "transition-colors",
+                                                                    category.iconSize === 'small' ? 'h-5 w-5' :
+                                                                        category.iconSize === 'large' ? 'h-9 w-9' : 'h-7 w-7',
+                                                                    !category.iconColor && "text-white"
+                                                                )}
+                                                                style={{ color: category.iconColor }}
+                                                            />
+                                                        </div>
+                                                    )}
                                             </div>
                                         )}
 
