@@ -304,7 +304,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                                 placeholder="Görsel URL..."
                                                 value={formData.image || ''}
                                                 onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                                className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs outline-none focus:border-black"
+                                                className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 font-medium placeholder:text-gray-400 outline-none focus:border-black"
                                             />
                                             <label className={cn("flex items-center justify-center w-full h-8 border border-gray-300 border-dashed rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100 text-xs text-gray-500 transition-colors gap-2", isUploading && "opacity-50")}>
                                                 {isUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>}
