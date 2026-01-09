@@ -429,32 +429,46 @@ export async function uploadImage(file: File, bucketName: string = 'qrmenu1-imag
 // --- ANALYTICS ---
 
 export async function trackPageView(restaurantId: string) {
-    await supabase.from('analytics').insert([{ restaurant_id: restaurantId, event_type: 'view' }]);
+    try {
+        await supabase.from('analytics').insert([{ restaurant_id: restaurantId, event_type: 'view' }]);
+    } catch (error) {
+        console.error("Error tracking view:", error);
+    }
 }
 
 export async function getDashboardStats(restaurantId: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Get start of today (00:00:00)
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    // Get start of yesterday
+    const startOfYesterday = new Date(startOfToday);
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+
+    // Get end of yesterday (which is start of today)
+    // We use >= startOfYesterday AND < startOfToday for yesterday Stats
+    // We use >= startOfToday for today Stats
 
     // Today's Views
-    const { count: todayCount } = await supabase
+    const { count: todayCount, error: todayError } = await supabase
         .from('analytics')
         .select('*', { count: 'exact', head: true })
         .eq('restaurant_id', restaurantId)
         .eq('event_type', 'view')
-        .gte('created_at', today.toISOString());
+        .gte('created_at', startOfToday.toISOString());
+
+    if (todayError) console.error("Error fetching today stats:", todayError);
 
     // Yesterday's Views
-    const { count: yesterdayCount } = await supabase
+    const { count: yesterdayCount, error: yesterdayError } = await supabase
         .from('analytics')
         .select('*', { count: 'exact', head: true })
         .eq('restaurant_id', restaurantId)
         .eq('event_type', 'view')
-        .gte('created_at', yesterday.toISOString())
-        .lt('created_at', today.toISOString());
+        .gte('created_at', startOfYesterday.toISOString())
+        .lt('created_at', startOfToday.toISOString());
+
+    if (yesterdayError) console.error("Error fetching yesterday stats:", yesterdayError);
 
     // Total Products
     const { count: productCount } = await supabase
