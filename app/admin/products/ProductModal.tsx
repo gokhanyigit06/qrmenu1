@@ -228,7 +228,7 @@ function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
                                         <label className="mb-0.5 block text-xs font-medium text-gray-700">Etiket</label>
                                         <select
                                             value={formData.badge || ''}
-                                            onChange={e => setFormData({ ...formData, badge: e.target.value || undefined })}
+                                            onChange={e => setFormData({ ...formData, badge: e.target.value })}
                                             className="w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm outline-none focus:border-black focus:ring-1 focus:ring-black text-gray-900"
                                         >
                                             <option value="">Yok</option>
