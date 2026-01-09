@@ -228,7 +228,7 @@ export default function SettingsPage() {
                             <select
                                 value={localSettings.fontFamily || 'Inter'}
                                 onChange={(e) => handleChange('fontFamily', e.target.value)}
-                                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 font-medium outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                             >
                                 <option value="Inter">Inter (Standart Modern)</option>
                                 <option value="Roboto">Roboto (Android Tarzı)</option>
