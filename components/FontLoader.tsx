@@ -13,16 +13,20 @@ export default function FontLoader() {
         const linkId = 'dynamic-font-loader';
         const existingLink = document.getElementById(linkId) as HTMLLinkElement;
 
-        const fontUrl = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/ /g, '+')}:wght@300;400;500;700;900&display=swap`;
+        const isSystemFont = ['Times New Roman', 'Arial', 'Helvetica', 'Courier New'].includes(fontFamily);
 
-        if (existingLink) {
-            existingLink.href = fontUrl;
-        } else {
-            const link = document.createElement('link');
-            link.id = linkId;
-            link.href = fontUrl;
-            link.rel = 'stylesheet';
-            document.head.appendChild(link);
+        if (!isSystemFont) {
+            const fontUrl = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/ /g, '+')}:wght@300;400;500;700;900&display=swap`;
+
+            if (existingLink) {
+                existingLink.href = fontUrl;
+            } else {
+                const link = document.createElement('link');
+                link.id = linkId;
+                link.href = fontUrl;
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+            }
         }
 
         // Apply font to body

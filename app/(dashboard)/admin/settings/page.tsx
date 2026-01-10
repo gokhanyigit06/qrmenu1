@@ -239,6 +239,7 @@ export default function SettingsPage() {
                                 <option value="Merriweather">Merriweather (Klasik Serif)</option>
                                 <option value="Oswald">Oswald (Dik & Sıkışık)</option>
                                 <option value="Raleway">Raleway (İnce & Modern)</option>
+                                <option value="Times New Roman">Times New Roman (Times Regular)</option>
                             </select>
                         </div>
 

@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'mickeys.thervz.co',
       },
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
     ],
   },
   reactStrictMode: true,
