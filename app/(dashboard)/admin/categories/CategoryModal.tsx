@@ -30,7 +30,8 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
         discountRate: undefined,
         icon: '',
         iconColor: '#ffffff',
-        iconSize: 'medium'
+        iconSize: 'medium',
+        station_name: 'Mutfak'
     });
 
     useEffect(() => {
@@ -50,7 +51,8 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                 discountRate: undefined,
                 icon: '',
                 iconColor: '#ffffff',
-                iconSize: 'medium'
+                iconSize: 'medium',
+                station_name: 'Mutfak'
             });
         }
     }, [category, isOpen]);
@@ -197,6 +199,43 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                                                 placeholder="Tüm ürünlerde geçerli indirim"
                                             />
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 space-y-4">
+                                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                                        <span className="w-1 h-4 bg-black rounded-full"></span>
+                                        Sipariş Yönlendirme (İstasyon)
+                                    </h3>
+                                    <div className="flex gap-4">
+                                        <label className="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-lg border border-gray-200 shadow-sm flex-1 hover:border-black transition-colors">
+                                            <input
+                                                type="radio"
+                                                name="station_name"
+                                                value="Mutfak"
+                                                checked={formData.station_name === 'Mutfak' || !formData.station_name}
+                                                onChange={e => setFormData({ ...formData, station_name: e.target.value })}
+                                                className="text-black focus:ring-black"
+                                            />
+                                            <div>
+                                                <span className="block text-sm font-bold text-gray-900">Mutfak</span>
+                                                <span className="block text-xs text-gray-500">Yemek Ekranına Düşer</span>
+                                            </div>
+                                        </label>
+                                        <label className="flex items-center gap-2 cursor-pointer bg-white px-4 py-3 rounded-lg border border-gray-200 shadow-sm flex-1 hover:border-black transition-colors">
+                                            <input
+                                                type="radio"
+                                                name="station_name"
+                                                value="Bar"
+                                                checked={formData.station_name === 'Bar'}
+                                                onChange={e => setFormData({ ...formData, station_name: e.target.value })}
+                                                className="text-black focus:ring-black"
+                                            />
+                                            <div>
+                                                <span className="block text-sm font-bold text-gray-900">Bar</span>
+                                                <span className="block text-xs text-gray-500">İçecek Ekranına Düşer</span>
+                                            </div>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -402,8 +441,8 @@ export function CategoryModal({ isOpen, onClose, onSave, category }: CategoryMod
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>,
+            </div >
+        </div >,
         document.body
     );
 }

@@ -5,6 +5,8 @@ export interface Restaurant {
   slug: string;
   created_at?: string;
   custom_domain?: string | null;
+  is_ordering_active?: boolean;
+  is_waiter_mode_active?: boolean;
 }
 
 export interface Category {
@@ -24,6 +26,7 @@ export interface Category {
   order?: number;
   isActive?: boolean;
   layoutMode?: 'grid' | 'list' | 'list-no-image';
+  station_name?: 'Mutfak' | 'Bar' | string;
 }
 
 export interface ProductTag {
@@ -122,3 +125,45 @@ export const categories: Category[] = [
 
 export const products: Product[] = [];
 
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id?: string;
+  product_name: string;
+  price: number;
+  quantity: number;
+  options?: any;
+  status: 'pending' | 'prepared' | 'served';
+}
+
+export interface Order {
+  id: string;
+  restaurant_id: string;
+  table_no: string;
+  status: 'pending' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+  total_amount: number;
+  final_amount?: number;
+  is_paid?: boolean;
+  customer_note?: string;
+  created_at: string;
+  items?: OrderItem[];
+  payments?: Payment[];
+}
+
+export interface Payment {
+  id: string;
+  order_id: string;
+  restaurant_id: string;
+  amount: number;
+  payment_method: 'cash' | 'credit_card' | 'meal_card' | 'other';
+  discount_amount: number;
+  created_at: string;
+}
+
+export interface Table {
+  id: string;
+  restaurant_id: string;
+  table_no: string;
+  qr_code_url?: string;
+}

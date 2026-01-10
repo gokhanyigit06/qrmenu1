@@ -1,6 +1,6 @@
 
 import { supabase } from './supabase';
-import { Category, Product, SiteSettings, Restaurant } from './data';
+import { Category, Product, SiteSettings, Restaurant, Order, OrderItem } from './data';
 
 // --- RESTAURANT ---
 
@@ -481,4 +481,169 @@ export async function getDashboardStats(restaurantId: string) {
         yesterdayViews: yesterdayCount || 0,
         totalProducts: productCount || 0
     };
+}
+
+// --- ORDER MODULE ---
+
+export async function createOrder(restaurantId: string, tableNo: string, items: any[], customerNote?: string): Promise<Order | null> {
+    // 1. Calculate Total
+    const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // 2. Create Order
+    const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+            restaurant_id: restaurantId,
+            table_no: tableNo,
+            total_amount: totalAmount,
+            customer_note: customerNote,
+            status: 'pending'
+        }])
+        .select()
+        .single();
+
+    if (orderError || !order) {
+        console.error("Order creation failed", orderError);
+        return null;
+    }
+
+    // 3. Create Order Items
+    const orderItems = items.map(item => ({
+        order_id: order.id,
+        product_id: item.product_id,
+        product_name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        options: item.options,
+        status: 'pending'
+    }));
+
+    const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+    if (itemsError) {
+        console.error("Order items creation failed", itemsError);
+        // We might want to rollback here or mark order as failed, but for now log it.
+    }
+
+    return order as Order;
+}
+
+export async function getActiveOrders(restaurantId: string): Promise<Order[]> {
+    // Get orders that are NOT completed or cancelled
+    // Also fetch items nested
+    const { data, error } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            items:order_items(*)
+        `)
+        .eq('restaurant_id', restaurantId)
+        .in('status', ['pending', 'preparing', 'ready'])
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error(error);
+        return [];
+    }
+    return data as any as Order[];
+}
+
+export async function updateOrderStatus(orderId: string, status: string) {
+    await supabase.from('orders').update({ status }).eq('id', orderId);
+}
+
+export async function updateOrderItemStatus(itemId: string, status: string) {
+    await supabase.from('order_items').update({ status }).eq('id', itemId);
+}
+
+export async function updateRestaurantFeatures(restaurantId: string, features: { is_ordering_active?: boolean, is_waiter_mode_active?: boolean }) {
+    await supabase.from('restaurants').update(features).eq('id', restaurantId);
+}
+
+export async function getActiveTableOrder(restaurantId: string, tableNo: string): Promise<Order | null> {
+    const { data, error } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            items:order_items(*)
+        `)
+        .eq('restaurant_id', restaurantId)
+        .eq('table_no', tableNo)
+        .in('status', ['pending', 'preparing', 'ready'])
+        .single();
+
+    if (error) return null;
+    return data as any as Order;
+}
+
+export async function processPayment(
+    restaurantId: string,
+    orderId: string,
+    amount: number,
+    paymentMethod: 'cash' | 'credit_card' | 'meal_card' | 'other',
+    discountAmount: number = 0,
+    isFinalPayment: boolean = false
+) {
+    // 1. Record Payment
+    const { error: paymentError } = await supabase
+        .from('payments')
+        .insert([{
+            restaurant_id: restaurantId,
+            order_id: orderId,
+            amount: amount,
+            payment_method: paymentMethod,
+            discount_amount: discountAmount
+        }]);
+
+    if (paymentError) throw paymentError;
+
+    // 2. Update Order if Final
+    if (isFinalPayment) {
+        // Calculate total including discount logic if needed, but for now we trust `isFinalPayment` flag
+        // Or we could summing up all payments + discount and check against total?
+        // Let's trust the frontend logic for "Close Table" for now, or just mark as paid.
+
+        const { error: updateError } = await supabase
+            .from('orders')
+            .update({
+                is_paid: true,
+                status: 'completed',
+                // We might want to store final collected amount or just rely on payments table
+            })
+            .eq('id', orderId);
+
+        if (updateError) throw updateError;
+    }
+}
+
+export async function addOrderItems(orderId: string, items: any[]) {
+    // 1. Prepare items
+    const orderItems = items.map(item => ({
+        order_id: orderId,
+        product_id: item.product_id,
+        product_name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        options: item.options,
+        status: 'pending'
+    }));
+
+    // 2. Insert items
+    const { error } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+    if (error) throw error;
+
+    // 3. Update Order Total
+    // Fetch order to get current total
+    const { data: order } = await supabase.from('orders').select('total_amount').eq('id', orderId).single();
+    if (order) {
+        const newItemsTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const newTotal = (order.total_amount || 0) + newItemsTotal;
+
+        await supabase.from('orders').update({ total_amount: newTotal }).eq('id', orderId);
+    }
 }

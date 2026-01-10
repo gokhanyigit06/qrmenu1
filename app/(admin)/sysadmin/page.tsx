@@ -72,6 +72,18 @@ export default function SysAdminPage() {
         }
     };
 
+    // Toggle Features
+    const handleToggleFeature = async (rest: any, feature: 'is_ordering_active' | 'is_waiter_mode_active') => {
+        try {
+            await Services.updateRestaurantFeatures(rest.id, { [feature]: !rest[feature] });
+            // Optimistic update or reload
+            setRestaurants(prev => prev.map(r => r.id === rest.id ? { ...r, [feature]: !r[feature] } : r));
+        } catch (error) {
+            console.error(error);
+            alert('Güncellenemedi.');
+        }
+    };
+
     // Impersonate (Yönetici Olarak Gir)
     const handleImpersonate = (rest: any) => {
         // LocalStorage'a session yazıp admin paneline fırlat
@@ -203,6 +215,8 @@ export default function SysAdminPage() {
                                 <th className="px-6 py-4">Restoran</th>
                                 <th className="px-6 py-4">URL Kodu (Slug)</th>
                                 <th className="px-6 py-4">Şifre</th>
+                                <th className="px-6 py-4 text-center">Sipariş</th>
+                                <th className="px-6 py-4 text-center">Garson</th>
                                 <th className="px-6 py-4">Kayıt Tarihi</th>
                                 <th className="px-6 py-4 text-right">İşlemler</th>
                             </tr>
@@ -213,6 +227,22 @@ export default function SysAdminPage() {
                                     <td className="px-6 py-4 font-bold text-gray-900">{rest.name}</td>
                                     <td className="px-6 py-4 font-mono text-xs text-indigo-600">/{rest.slug}</td>
                                     <td className="px-6 py-4 font-mono text-xs">{rest.password}</td>
+                                    <td className="px-6 py-4 text-center">
+                                        <button
+                                            onClick={() => handleToggleFeature(rest, 'is_ordering_active')}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${rest.is_ordering_active ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition shadow duration-200 ease-in-out ${rest.is_ordering_active ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <button
+                                            onClick={() => handleToggleFeature(rest, 'is_waiter_mode_active')}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${rest.is_waiter_mode_active ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition shadow duration-200 ease-in-out ${rest.is_waiter_mode_active ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </td>
                                     <td className="px-6 py-4">
                                         {new Date(rest.created_at).toLocaleDateString('tr-TR')}
                                     </td>
