@@ -85,6 +85,7 @@ export default function ProductModal({ isOpen, onClose, product, language }: Pro
                         src={imageSrc}
                         alt={displayName}
                         fill
+                        unoptimized
                         className="object-cover"
                     />
                 </div>

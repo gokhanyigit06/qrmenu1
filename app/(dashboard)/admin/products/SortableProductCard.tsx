@@ -43,6 +43,7 @@ export function SortableProductCard({ product, onEdit, onDelete, onToggleActive 
                     src={product.image && product.image.length > 5 ? product.image : (settings.defaultProductImage || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c')}
                     alt={product.name}
                     fill
+                    unoptimized
                     className="object-cover"
                 />
 

@@ -181,6 +181,7 @@ export default function ProductCard({ product, language, onClick, layoutMode = '
                     src={imageSrc}
                     alt={displayName}
                     fill
+                    unoptimized
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 {product.discountPrice && (
